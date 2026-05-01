@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayni Commons — A Land Stewardship Community</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --clay:     #8B5E3C;
+  --soil:     #5C3D1E;
+  --adobe:    #C4956A;
+  --sand:     #E8D5B7;
+  --cream:    #F5EFE4;
+  --parchment:#FAF6EF;
+  --sage:     #7A8C6E;
+  --moss:     #4A5E3A;
+  --stone:    #9E8E7A;
+  --charcoal: #2E2A25;
+  --ember:    #A0522D;
+  --gold:     #B8963E;
+  --mist:     #D4CFC7;
+  --deep:     #1E1810;
+  --rule:     rgba(140,94,60,0.25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--parchment);
+  color: var(--charcoal);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  line-height: 1.75;
+  font-size: 17px;
+  overflow-x: hidden;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.5;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  background: var(--soil);
+  background-image:
+    radial-gradient(ellipse at 30% 70%, rgba(160,82,45,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 25%, rgba(122,140,110,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(92,61,30,0.6) 0%, transparent 80%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--parchment));
+}
+
+.hero-mark {
+  width: 60px;
+  height: 2px;
+  background: var(--adobe);
+  margin: 0 auto 48px;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.2s forwards;
+}
+
+.hero-eyebrow {
+  font-family: 'Jost', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--adobe);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.4s forwards;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(56px, 9vw, 100px);
+  color: var(--sand);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 1.2s ease 0.6s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--adobe);
+}
+
+.hero-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(16px, 2.5vw, 22px);
+  color: var(--mist);
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.9s forwards;
+}
+
+.hero-ayni {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  color: rgba(232,213,183,0.6);
+  letter-spacing: 0.08em;
+  max-width: 420px;
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.1s forwards;
+}
+
+.hero-ayni strong {
+  color: var(--adobe);
+  font-weight: 400;
+}
+
+.hero-location {
+  position: absolute;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(196,149,106,0.5);
+  opacity: 0;
+  animation: fadeUp 1s ease 1.4s forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── NAVIGATION ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245,239,228,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--soil);
+  letter-spacing: 0.02em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--clay); }
+
+/* ── LAYOUT ── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+.container-wide {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+section {
+  padding: 96px 0;
+}
+
+section + section {
+  border-top: 1px solid var(--rule);
+}
+
+/* ── SECTION HEADERS ── */
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--adobe);
+  font-weight: 400;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(36px, 5vw, 54px);
+  color: var(--soil);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 48px;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--clay);
+}
+
+.subsection-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--soil);
+  margin: 48px 0 16px;
+  letter-spacing: 0.01em;
+}
+
+/* ── BODY TEXT ── */
+p {
+  color: var(--charcoal);
+  margin-bottom: 20px;
+  font-size: 16.5px;
+  line-height: 1.8;
+}
+
+p + p { margin-top: 0; }
+
+/* ── PULLQUOTE ── */
+.pullquote {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(22px, 3.5vw, 32px);
+  color: var(--clay);
+  line-height: 1.4;
+  border-left: 3px solid var(--adobe);
+  padding: 16px 0 16px 36px;
+  margin: 56px 0;
+}
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  background: rgba(196,149,106,0.1);
+  border: 1px solid rgba(196,149,106,0.3);
+  border-left: 4px solid var(--adobe);
+  padding: 28px 32px;
+  margin: 40px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.callout.green {
+  background: rgba(122,140,110,0.08);
+  border-color: rgba(122,140,110,0.25);
+  border-left-color: var(--sage);
+}
+
+.callout.amber {
+  background: rgba(184,150,62,0.08);
+  border-color: rgba(184,150,62,0.25);
+  border-left-color: var(--gold);
+}
+
+.callout-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--clay);
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.callout.green .callout-label { color: var(--sage); }
+.callout.amber .callout-label { color: var(--gold); }
+
+.callout p { margin-bottom: 0; font-size: 15.5px; }
+
+/* ── TIER CARDS ── */
+.tiers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 48px 0;
+}
+
+.tier-card {
+  background: white;
+  border: 1px solid var(--mist);
+  border-top: 4px solid var(--clay);
+  padding: 32px;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tier-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(92,61,30,0.1);
+}
+
+.tier-card:nth-child(2) { border-top-color: var(--sage); }
+.tier-card:nth-child(3) { border-top-color: var(--soil); }
+.tier-card:nth-child(4) { border-top-color: var(--gold); }
+
+.tier-num {
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 6px;
+}
+
+.tier-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 26px;
+  color: var(--soil);
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.tier-card:nth-child(2) .tier-name { color: var(--moss); }
+.tier-card:nth-child(3) .tier-name { color: var(--soil); }
+.tier-card:nth-child(4) .tier-name { color: var(--ember); }
+
+.tier-rows { display: flex; flex-direction: column; gap: 12px; }
+
+.tier-row { display: flex; gap: 12px; font-size: 14.5px; line-height: 1.5; }
+
+.tier-row-label {
+  font-weight: 500;
+  color: var(--clay);
+  white-space: nowrap;
+  min-width: 80px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+
+.tier-card:nth-child(2) .tier-row-label { color: var(--sage); }
+.tier-card:nth-child(3) .tier-row-label { color: var(--soil); }
+.tier-card:nth-child(4) .tier-row-label { color: var(--gold); }
+
+.tier-row-val { color: var(--charcoal); flex: 1; }
+
+/* ── PIPELINE ARROW ── */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 48px 0;
+  overflow-x: auto;
+}
+
+.pipeline-step {
+  flex: 1;
+  min-width: 140px;
+  text-align: center;
+  padding: 20px 12px;
+  background: white;
+  border: 1px solid var(--mist);
+  position: relative;
+}
+
+.pipeline-step::after {
+  content: '→';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--adobe);
+  font-size: 18px;
+  z-index: 2;
+}
+
+.pipeline-step:last-child::after { display: none; }
+
+.pipeline-num {
+  font-size: 28px;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--mist);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.pipeline-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin: 6px 0 4px;
+}
+
+.pipeline-desc {
+  font-size: 12px;
+  color: var(--stone);
+  line-height: 1.4;
+}
+
+/* ── CREATIVE GRID ── */
+.creative-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin: 48px 0;
+  background: var(--mist);
+}
+
+.creative-cell {
+  background: var(--parchment);
+  padding: 28px 24px;
+  transition: background 0.2s;
+}
+
+.creative-cell:hover { background: white; }
+
+.creative-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.creative-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--soil);
+  margin-bottom: 8px;
+}
+
+.creative-desc {
+  font-size: 13.5px;
+  color: var(--stone);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── COVENANT LIST ── */
+.covenant-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.covenant-list li {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 20px 24px;
+  background: white;
+  border: 1px solid var(--mist);
+  border-left: 3px solid var(--rule);
+}
+
+.covenant-list.give li { border-left-color: var(--clay); }
+.covenant-list.receive li { border-left-color: var(--sage); }
+
+.covenant-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--adobe);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+.covenant-list.receive .covenant-dot { background: var(--sage); }
+
+.covenant-item-title {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--soil);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.covenant-item-desc {
+  font-size: 14.5px;
+  color: var(--charcoal);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── GRANT TABLE ── */
+.grant-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 32px 0;
+  font-size: 14px;
+}
+
+.grant-table th {
+  background: var(--soil);
+  color: var(--sand);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.grant-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--mist);
+  vertical-align: top;
+  color: var(--charcoal);
+}
+
+.grant-table tr:nth-child(even) td { background: rgba(245,239,228,0.5); }
+.grant-table tr:hover td { background: rgba(196,149,106,0.06); }
+
+.grant-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.badge-federal { background: rgba(46,109,164,0.12); color: #1d4f7a; }
+.badge-state   { background: rgba(122,140,110,0.15); color: var(--moss); }
+.badge-private { background: rgba(184,150,62,0.15); color: var(--gold); }
+
+/* ── EXPENSE CHART ── */
+.expense-chart {
+  margin: 40px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.expense-row {
+  display: grid;
+  grid-template-columns: 260px 1fr 100px;
+  align-items: center;
+  gap: 16px;
+}
+
+.expense-label {
+  font-size: 13px;
+  color: var(--charcoal);
+  line-height: 1.3;
+}
+
+.expense-bar-track {
+  background: var(--mist);
+  height: 14px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.expense-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.bar-infra  { background: var(--adobe); }
+.bar-stock  { background: var(--moss); }
+.bar-fiber  { background: var(--gold); }
+.bar-ops    { background: var(--ember); }
+
+.expense-range {
+  font-size: 12px;
+  color: var(--stone);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.expense-legend {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--stone);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* ── FOUNDER NOTE ── */
+.founder-note {
+  background: var(--soil);
+  padding: 72px 0;
+  text-align: center;
+}
+
+.founder-note .container { max-width: 680px; }
+
+.founder-note p {
+  color: var(--sand);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(18px, 2.8vw, 26px);
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+
+.founder-note p:last-of-type { margin-bottom: 0; }
+
+.founder-sig {
+  margin-top: 40px;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--adobe);
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--deep);
+  padding: 48px;
+  text-align: center;
+}
+
+footer p {
+  color: rgba(232,213,183,0.4);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  margin: 0;
+}
+
+/* ── DIVIDERS ── */
+.ornament {
+  text-align: center;
+  color: var(--adobe);
+  font-size: 18px;
+  margin: 56px 0;
+  opacity: 0.4;
+  letter-spacing: 0.5em;
+}
+
+/* ── UTILITY ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin: 40px 0;
+}
+
+.label-value {
+  margin-bottom: 20px;
+}
+
+.label-value dt {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 4px;
+}
+
+.label-value dd {
+  font-size: 15px;
+  color: var(--charcoal);
+  line-height: 1.6;
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .container, .container-wide { padding: 0 24px; }
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .tiers { grid-template-columns: 1fr; }
+  .creative-grid { grid-template-columns: 1fr 1fr; }
+  .two-col { grid-template-columns: 1fr; gap: 24px; }
+  .expense-row { grid-template-columns: 180px 1fr 80px; }
+  .pipeline { flex-wrap: wrap; }
+}
+
+@media (max-width: 520px) {
+  .creative-grid { grid-template-columns: 1fr; }
+  .expense-row { grid-template-columns: 1fr; }
+  .expense-range { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-mark"></div>
+  <p class="hero-eyebrow">Apache County, Arizona &nbsp;·&nbsp; 40 Acres &nbsp;·&nbsp; High Desert at 6,200 ft</p>
+  <h1 class="hero-title"><em>Ayni</em> Commons</h1>
+  <p class="hero-sub">A Land Stewardship Community</p>
+  <p class="hero-ayni">
+    <strong>Ayni</strong> — Quechua for sacred reciprocity.<br>
+    I give to you now and trust that it comes back —<br>not as transaction, but as relationship.
+  </p>
+  <p class="hero-location">496 CR 5152 &nbsp;·&nbsp; Concho, Arizona 85924</p>
+</div>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <span class="nav-logo">Ayni Commons</span>
+  <ul class="nav-links">
+    <li><a href="#purpose">Purpose</a></li>
+    <li><a href="#pipeline">The Pipeline</a></li>
+    <li><a href="#land">The Land</a></li>
+    <li><a href="#creative">Creative Life</a></li>
+    <li><a href="#living">Living Systems</a></li>
+    <li><a href="#covenant">Covenant</a></li>
+    <li><a href="#funding">Funding</a></li>
+    <li><a href="#platform">The Platform</a></li>
+    <li><a href="ayni_planner_mobile.html" style="color:var(--adobe);font-weight:500">Build Planner ↗</a></li>
+  </ul>
+</nav>
+
+<!-- ── SECTION 1: PURPOSE ── -->
+<section id="purpose">
+  <div class="container">
+    <span class="section-label">Section I</span>
+    <h2 class="section-title reveal">What We Are<br><em>Building Here</em></h2>
+
+    <p class="reveal">Ayni Commons is a regenerative land stewardship community being established on 40 acres of high-desert rangeland in Apache County, Arizona. It is being built on degraded soil with a compromised water table and barely any biological matter — because fixing what is broken is the point. The land is not a backdrop for the mission. The land <em>is</em> the mission.</p>
+
+    <p class="reveal">The community it sustains offers something more specific: a structured, merit-based pathway through which individuals and families experiencing housing instability, homelessness, or economic displacement can find purpose, build competency, and ultimately own land. Not through charity. Through ayni — reciprocal exchange, earned trust, and the covenant we make with each other and with the earth.</p>
+
+    <div class="pullquote reveal">
+      "We do not inherit the land from our ancestors.<br>We borrow it from our children."
+    </div>
+
+    <div class="callout reveal">
+      <span class="callout-label">The Central Argument</span>
+      <p>Homelessness and housing instability are structural outputs of a system that has treated land as an investment vehicle and community as optional. The answer is not more services. It is a different relationship to land — one in which people have a role, a responsibility, and a stake. This community is designed to provide all three.</p>
+    </div>
+
+    <p class="reveal">Every practice put into this ground — the water harvesting, the soil building, the food systems, the creative studios, the below-grade fungal hub brewing fertility from fish scraps and forest floor biology — is built to outlast the founder and to demonstrate that degraded high-desert land can, through deliberate stewardship, become something alive and extraordinary.</p>
+  </div>
+</section>
+
+<!-- ── SECTION 2: PIPELINE ── -->
+<section id="pipeline">
+  <div class="container">
+    <span class="section-label">Section II</span>
+    <h2 class="section-title reveal">The <em>Pathway</em></h2>
+
+    <p class="reveal">The pipeline from entry to land ownership is structured, merit-based, and transparent. Every tier has defined rights, defined responsibilities, and defined criteria for advancement. Progress is earned through demonstrated commitment and competency — verified collectively.</p>
+
+    <div class="callout green reveal">
+      <span class="callout-label">On Self-Selection</span>
+      <p>The single most important design feature of this pathway is that it begins with informed self-selection. The community's values, expectations, physical demands, and lifestyle are described plainly before anyone arrives. This is not a conventional life. People who arrive knowing what they are entering are better prepared, more committed, and more likely to thrive.</p>
+    </div>
+
+    <div class="pipeline reveal">
+      <div class="pipeline-step">
+        <div class="pipeline-num">01</div>
+        <div class="pipeline-label">Entry</div>
+        <div class="pipeline-desc">WWOOF / Workaway + shelter & women's center referrals</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">02</div>
+        <div class="pipeline-label">Resident</div>
+        <div class="pipeline-desc">Merit + commitment + 6-month formal probation</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">03</div>
+        <div class="pipeline-label">Member</div>
+        <div class="pipeline-desc">Full vote · custom home built · enterprise rights</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">04</div>
+        <div class="pipeline-label">Owner</div>
+        <div class="pipeline-desc">Parcel title once land is held debt-free</div>
+      </div>
+    </div>
+
+    <div class="tiers reveal">
+      <div class="tier-card">
+        <div class="tier-num">Tier 01</div>
+        <div class="tier-name">Entry</div>
+        <div class="tier-rows">
+          <div class="tier-row">
+            <span class="tier-row-label">Who</span>
+            <span class="tier-row-val">WWOOF/Workaway travelers and individuals referred from shelters, women's centers, and transitional housing programs</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Labor</span>
+            <span class="tier-row-val">5–6 hours/day, 5 days/week, rotating across all farm enterprises</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Gets</span>
+            <span class="tier-row-val">Housing, food, safety, voice in daily decisions, community protection</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Min Stay</span>
+            <span class="tier-row-val">60 days. No maximum. Advancement is merit-based, not time-based.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-num">Tier 02</div>
+        <div class="tier-name">Resident</div>
+        <div class="tier-rows">
+          <div class="tier-row">
+            <span class="tier-row-label">Criteria</span>
+            <span class="tier-row-val">Can stand in for any of 6 leadership roles: livestock, garden, water, compost, mushrooms, building</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Probation</span>
+            <span class="tier-row-val">6-month formal period. Ends with unanimous full member vote.</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Gets</span>
+            <span class="tier-row-val">Private sleeping space, full voice in weekly meetings, access to all community infrastructure</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Not Yet</span>
+            <span class="tier-row-val">Voting rights on major decisions. Custom dwelling. Enterprise rights.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-num">Tier 03</div>
+        <div class="tier-name">Full Member</div>
+        <div class="tier-rows">
+          <div class="tier-row">
+            <span class="tier-row-label">Criteria</span>
+            <span class="tier-row-val">Completed 6-month probation + unanimous full member vote</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Rights</span>
+            <span class="tier-row-val">Full vote on all decisions; community builds their custom earthen home on assigned parcel; own 10×16 walipini built with community support</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Enterprises</span>
+            <span class="tier-row-val">May propose new enterprises with documented evidence and community approval</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Homes</span>
+            <span class="tier-row-val">Custom, not repeatable. Adobe, cob, earthbag, juniper timber. Built by the community together.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-num">Tier 04</div>
+        <div class="tier-name">Owner</div>
+        <div class="tier-rows">
+          <div class="tier-row">
+            <span class="tier-row-label">Eligibility</span>
+            <span class="tier-row-val">3+ years as full member; land held debt-free; unanimous parcel allocation vote</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Title</span>
+            <span class="tier-row-val">Individual parcel title. Covenant terms binding in perpetuity. No speculative resale.</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Timeline</span>
+            <span class="tier-row-val">~Year 10 for founding members. Land debt-free ~Year 7. Worth it.</span>
+          </div>
+          <div class="tier-row">
+            <span class="tier-row-label">Promise</span>
+            <span class="tier-row-val">The founding steward's commitment to this pathway is a founding obligation, written into both legal entities.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 3: LAND ── -->
+<section id="land">
+  <div class="container">
+    <span class="section-label">Section III</span>
+    <h2 class="section-title reveal">The <em>Farm</em></h2>
+
+    <p class="reveal">The farm is not a backdrop for the community model. It is the mechanism. Land stewardship provides what the conventional service economy cannot: work that matters, a system in which individual effort has visible consequence, and a closed loop in which contribution is immediately connected to sustenance.</p>
+
+    <div class="two-col reveal">
+      <dl>
+        <div class="label-value">
+          <dt>Location</dt>
+          <dd>496 CR 5152, Concho, Arizona 85924 — Apache County</dd>
+        </div>
+        <div class="label-value">
+          <dt>Size</dt>
+          <dd>40 acres, fully fenced with existing corrals</dd>
+        </div>
+        <div class="label-value">
+          <dt>Elevation</dt>
+          <dd>~6,200 feet — four seasons, cold winters, 14" annual rainfall</dd>
+        </div>
+        <div class="label-value">
+          <dt>Soil</dt>
+          <dd>Aridic Argiustolls — ~1% organic matter. Degraded by design. Remediation is the point.</dd>
+        </div>
+      </dl>
+      <dl>
+        <div class="label-value">
+          <dt>Water</dt>
+          <dd>Freshwater aquifer confirmed. RO filtration at tap. Constructed wetland filtration in pond sequence.</dd>
+        </div>
+        <div class="label-value">
+          <dt>Hunting</dt>
+          <dd>Property allows hunting. Elk, mule deer, Gambel's quail, wild turkey.</dd>
+        </div>
+        <div class="label-value">
+          <dt>Nearest Town</dt>
+          <dd>Show Low ~30 miles — farmers market, restaurant accounts, services</dd>
+        </div>
+        <div class="label-value">
+          <dt>Philosophy</dt>
+          <dd>Not looking for perfect land. Looking for land worth fixing.</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="subsection-title reveal">Core Farm Enterprises</div>
+
+    <div class="callout amber reveal">
+      <span class="callout-label">The Below-Grade Fungal Hub</span>
+      <p>The walipini pit greenhouse and the fungal hub share the same below-grade zone and are physically connected. The hub operates six fertility systems: Fish Amino Acids brewed from tilapia scraps, Fermented Plant Juice from on-site comfrey, Indigenous Microorganisms captured from the forest floor, Compost Tea brewed with duck pond water, Mycorrhizal Inoculant (the only purchased input — once, then self-perpetuating forever), and Wood Chip Habitat from juniper clearing. Year 2 onward: total fertility program cost approaches zero.</p>
+    </div>
+
+    <div class="creative-grid reveal" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="creative-cell">
+        <span class="creative-icon">🐐</span>
+        <div class="creative-title">Goat Dairy</div>
+        <p class="creative-desc">8–12 does starter herd; artisan cheese, kefir, goat milk soap and skin care. Scaling to 15–20 does Year 2.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🍄</span>
+        <div class="creative-title">Mushroom Tunnel</div>
+        <p class="creative-desc">Oyster, lion's mane, shiitake, king stropharia. Below-grade, connected to fungal hub. Primary cash enterprise.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌿</span>
+        <div class="creative-title">Walipini System</div>
+        <p class="creative-desc">Community walipini (20×30 ft) for shared production and starts. Every full member builds their own 10×16 ft walipini with community support — their primary stewardship domain, satellite-connected to the main fungal hub. Structured crop coordination assigns staple responsibilities; members grow whatever else they choose. Pooled produce feeds the table.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🦙</span>
+        <div class="creative-title">Alpacas + Sheep</div>
+        <p class="creative-desc">3–5 alpaca females for fine fiber; 5–10 ewes for wool. Alpacas serve as herd guardians. Feeds the fiber arts studio.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌊</span>
+        <div class="creative-title">Pond + Chinampa System</div>
+        <p class="creative-desc">Floating raft gardens on the Aztec model. Sequential ponds: storage, habitat, infiltration, filtration.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🍯</span>
+        <div class="creative-title">Apiary</div>
+        <p class="creative-desc">Honey, beeswax products, pollination for all flowering systems. Botanical herbal line from food forest.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🐇</span>
+        <div class="creative-title">Rabbits + Chickens</div>
+        <p class="creative-desc">Community protein and deep litter composting. Eggs, meat, and manure for the closed loop.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🦌</span>
+        <div class="creative-title">Guided Hunting</div>
+        <p class="creative-desc">Elk, mule deer, upland bird. Bi-annual desert survival camps. Zero infrastructure cost.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🐴</span>
+        <div class="creative-title">Working Mule</div>
+        <p class="creative-desc">Draft power for earthworks, hauling, and ongoing land maintenance throughout the operation's life.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 4: CREATIVE ── -->
+<section id="creative">
+  <div class="container">
+    <span class="section-label">Section IV</span>
+    <h2 class="section-title reveal">The <em>Creative Life</em></h2>
+
+    <p class="reveal">A community built around land stewardship is also a community built around making things. The creative infrastructure produces tools, vessels, beauty, and the particular kind of human flourishing that only comes from working with your hands on something that has no practical justification except that it is beautiful.</p>
+
+    <div class="pullquote reveal">
+      "A visiting musician may be recording in the studio carved into the hillside while someone else is blowing glass fifty feet away. Someone is throwing a pot. Someone is carving juniper in the woodshop. Someone is spinning alpaca fiber on the covered porch while the goats graze below."
+    </div>
+
+    <div class="creative-grid reveal">
+      <div class="creative-cell">
+        <span class="creative-icon">🔥</span>
+        <div class="creative-title">Forge + Blacksmith</div>
+        <p class="creative-desc">On-site tool and hardware production. Hinges, knives, agricultural implements. Self-sufficiency infrastructure and saleable art.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🏺</span>
+        <div class="creative-title">Pottery Studio + Kiln</div>
+        <p class="creative-desc">Wood-fired kiln built from adobe and firebrick. Storage crocks, tableware, art. Every vessel made is a vessel not purchased.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🎨</span>
+        <div class="creative-title">Art Studio</div>
+        <p class="creative-desc">Visual art in any medium. North-facing window, earthen walls, natural light. Artist residency program. Open to all tiers.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">💨</span>
+        <div class="creative-title">Glass Blowing Hot Shop</div>
+        <p class="creative-desc">Glory hole, marver, annealing oven. Vessels, window glass for earthen structures, art. Residency anchor for glass artists.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🪵</span>
+        <div class="creative-title">Woodcarving Studio</div>
+        <p class="creative-desc">Juniper cleared from the land becomes bowls, spoons, furniture. Nothing leaves the property as waste.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🧵</span>
+        <div class="creative-title">Fiber Arts + Textiles</div>
+        <p class="creative-desc">Alpaca, sheep wool, flax, hemp, plant dyes. Spinning wheels, floor looms, dye kitchen. Hand-woven alpaca for sale.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🍷</span>
+        <div class="creative-title">Vineyard</div>
+        <p class="creative-desc">Pergola-trained vines throughout the community spaces. Boutique label. Malvasia Bianca, Vermentino, Sangiovese at elevation.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🎵</span>
+        <div class="creative-title">Amphitheater + Studio</div>
+        <p class="creative-desc">Hillside amphitheater carved from excavation spoil. Below-grade music studio — earthen walls, natural acoustic warmth.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌿</span>
+        <div class="creative-title">Biosonification</div>
+        <p class="creative-desc">Electrodes on plant tissue throughout the property translate electrical activity into MIDI data and continuous ambient sound. The mushroom tunnel. The walipini. The food forest. The pond reeds. The land is playing — piped through speakers in earthen walls. Guests wake to it. The amphitheater performs with it. The knowledge hub archives it.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">📚</span>
+        <div class="creative-title">Knowledge Hub + Library</div>
+        <p class="creative-desc">Earth-sheltered. Carved reading alcoves. Darkroom. Writing room. Media node. The room where the books get written.</p>
+      </div>
+    </div>
+
+    <div class="callout green reveal" style="margin-top: 48px;">
+      <span class="callout-label">Meditation Gardens</span>
+      <p>Deliberately designed spaces for quiet and restoration: a stone labyrinth that is also a water harvesting path, a water feature gravity-fed from the pond system, a fire circle that is also the outdoor kitchen, a grove of fruit trees with benches underneath. Every element is also functional. Beauty and function are not in opposition here — they are the same thing. The gardens are also wired for biosonification — the plants' own electrical voice plays as continuous ambient sound. The garden is not silent. It is alive.</p>
+    </div>
+
+    <p class="reveal" style="margin-top: 32px;">Also: sauna, cold plunge, projector screen for movie nights, gaming when it rains. Ancient practices and modern comforts coexist without apology. The integration is the point.</p>
+  </div>
+</section>
+
+<!-- ── SECTION 4B: LIVING SYSTEMS ── -->
+<section id="living">
+  <div class="container">
+    <span class="section-label">Section IV-B</span>
+    <h2 class="section-title reveal">Living <em>Systems</em></h2>
+
+    <p class="reveal">Self-sufficiency is not an ideology here. It is an engineering problem. Every system below reduces dependence on a purchased input or external utility. Taken together they constitute a community that can function — not merely survive but genuinely thrive — independent of the grid, the grocery supply chain, the fuel market, and the pharmaceutical industry.</p>
+
+    <div class="two-col reveal" style="margin-top: 40px;">
+      <div>
+        <div class="subsection-title" style="margin-top:0">Water Sovereignty</div>
+        <ul class="covenant-list receive" style="margin-top: 16px;">
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Swales + Snow Harvest</div><p class="covenant-item-desc">On-contour earthworks catch monsoon rainfall. At 6,200 ft the property receives real snow — designed berms direct snowmelt into infiltration zones.</p></div></li>
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Fog Nets</div><p class="covenant-item-desc">High-elevation mesh panels harvest moisture from fog and low cloud that never registers as rainfall. Zero maintenance, meaningful yield.</p></div></li>
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Greywater Cascade</div><p class="covenant-item-desc">Sauna, kitchen, and shower water runs through planted biofilter beds — willow, elderberry, comfrey — before entering the orchard or pond sequence. Nothing is wasted.</p></div></li>
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Rain Chains</div><p class="covenant-item-desc">From every roof edge into cisterns. Japanese aesthetic, fully functional, beautiful in the rain.</p></div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="subsection-title" style="margin-top:0">Energy Sovereignty</div>
+        <ul class="covenant-list give" style="margin-top: 16px;">
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Rocket Mass Heaters</div><p class="covenant-item-desc">The most thermally efficient wood-burning technology available. Burns a fraction of conventional stove fuel. Stores heat in thermal mass for 12–18 hours. Every earthen home gets one. Fuel: on-site juniper.</p></div></li>
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Biogas Digester</div><p class="covenant-item-desc">Goat and pig manure plus kitchen scraps produce cooking gas and liquid fertilizer. Closes the waste loop entirely. Replaces propane.</p></div></li>
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Solar + Wind</div><p class="covenant-item-desc">Solar primary. Small wind turbine backup for cloudy days and winter. They are complementary, not redundant.</p></div></li>
+          <li><span class="covenant-dot"></span><div><div class="covenant-item-title">Passive Solar Design</div><p class="covenant-item-desc">Every structure oriented for winter solar gain. Summer sun blocked, winter sun captured. No mechanical heating needed in mild weather.</p></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="subsection-title reveal">Community Infrastructure</div>
+
+    <div class="creative-grid reveal" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="creative-cell">
+        <span class="creative-icon">🍶</span>
+        <div class="creative-title">Fermentation Cave</div>
+        <p class="creative-desc">Below-grade, 55–60°F year-round. Cheese aging, wine cellaring, vinegar, long-ferment vegetables. The community's larder built into the earth.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🫙</span>
+        <div class="creative-title">Preservation Kitchen</div>
+        <p class="creative-desc">Separate from the daily kitchen. Pressure canning, dehydrating, cheese vat, soap production, herbal medicine making. Where the harvest becomes winter food.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🍞</span>
+        <div class="creative-title">Outdoor Bread Oven</div>
+        <p class="creative-desc">Stone or cob, wood-fired, community baking days weekly. The smell alone justifies it. The anchor for community gathering.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌱</span>
+        <div class="creative-title">Seed Library</div>
+        <p class="creative-desc">Open-pollinated, heirloom, regionally adapted varieties. Housed in the earth-sheltered library. Saved seed is agricultural sovereignty. Also a trading currency with neighboring farms.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌿</span>
+        <div class="creative-title">Medicinal Herb Garden</div>
+        <p class="creative-desc">Echinacea, elderberry, yarrow, calendula, passionflower, valerian. Reduces purchased medicine costs. Feeds the botanical herbal product line.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🔧</span>
+        <div class="creative-title">Tool Library + Repair Shop</div>
+        <p class="creative-desc">Every tool documented, maintained, and available to every tier. Sharpening station. Repair before replace is the first question. Connected to the blacksmith forge.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🫧</span>
+        <div class="creative-title">Temazcal</div>
+        <p class="creative-desc">The indigenous thermal purification lodge. Stone and earthbag dome. Ceremony as much as wellness. Where the community marks significant transitions — arrivals, membership, grief, healing.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🐦</span>
+        <div class="creative-title">Quail Colony</div>
+        <p class="creative-desc">High egg production relative to feed and space. Producing for the community table within 6 weeks of setup. Low management overhead.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌾</span>
+        <div class="creative-title">Biochar Production</div>
+        <p class="creative-desc">Retort kiln from salvaged steel drums. Juniper clearing waste becomes carbon sequestration and soil amendment. The problem is the product.</p>
+      </div>
+    </div>
+
+    <div class="two-col reveal" style="margin-top: 40px;">
+      <div class="callout green" style="margin: 0;">
+        <span class="callout-label">Children's Zones</span>
+        <p>A dedicated children's garden with raised beds sized for small hands. A play structure built from juniper timber. A children's reading corner in the library. Outdoor learning spaces throughout the food forest and animal areas. Children are active participants in agricultural life from the earliest age they choose.</p>
+      </div>
+      <div class="callout amber" style="margin: 0;">
+        <span class="callout-label">Child-Free Zones</span>
+        <p>The writing room, meditation alcoves, below-grade music studio, and at least one quiet garden space are adult-only by community covenant. Not punitive exclusions — the architecture of adult sanity in communal living. Posted, respected, and enforced by community agreement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 5: COVENANT ── -->
+<section id="covenant">
+  <div class="container">
+    <span class="section-label">Section V</span>
+    <h2 class="section-title reveal">The <em>Covenant</em></h2>
+
+    <p class="reveal">The title of this community is not a sentiment. Ayni is the covenant. In a market economy, what we owe each other is defined by contract, priced by the market, and enforced by courts. In this community, what we owe each other is defined by this — and enforced by the community itself.</p>
+
+    <div class="subsection-title reveal">What the Community Owes Every Member</div>
+    <ul class="covenant-list receive reveal">
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">Safety</div>
+          <p class="covenant-item-desc">Physical safety, freedom from harassment, freedom from coercion. Non-negotiable at every tier and for every person on the property regardless of age, relationship, or status.</p>
+        </div>
+      </li>
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">Sustenance</div>
+          <p class="covenant-item-desc">Adequate food from the farm's production and adequate shelter. Not contingent on performance. Not used as leverage.</p>
+        </div>
+      </li>
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">Voice</div>
+          <p class="covenant-item-desc">Every person on this property has the right to be heard. The weight of that voice in formal decisions changes by tier. The right to speak does not.</p>
+        </div>
+      </li>
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">A Fair Pathway</div>
+          <p class="covenant-item-desc">The advancement criteria are written, published, and applied consistently. No one is held back without documented reason. No one is advanced without meeting the criteria.</p>
+        </div>
+      </li>
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">The Promise of Ownership</div>
+          <p class="covenant-item-desc">The founding steward's commitment to the ownership pathway is a founding obligation, documented in the covenant and binding in perpetuity.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="subsection-title reveal">What Every Member Owes the Community</div>
+    <ul class="covenant-list give reveal">
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">Labor</div>
+          <p class="covenant-item-desc">5–6 hours of farm work per day, 5 days per week. The foundation of the exchange. Not negotiable.</p>
+        </div>
+      </li>
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">Care</div>
+          <p class="covenant-item-desc">For the land, the animals, the infrastructure, and each other. Care is not a personality trait here — it is a practice the community teaches and expects.</p>
+        </div>
+      </li>
+      <li>
+        <span class="covenant-dot"></span>
+        <div>
+          <div class="covenant-item-title">Honesty</div>
+          <p class="covenant-item-desc">About capacity, struggle, and conflict. A community that cannot speak plainly about difficulty cannot function. Problems addressed early are problems that can be solved.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="subsection-title reveal">Time as Community Currency</div>
+    <p class="reveal">Ayni Commons operates an internal time-banking system. One hour of contribution equals one time credit, regardless of the nature of the work. An hour of goat milking equals an hour of teaching pottery equals an hour of childcare equals an hour of accounting. Time banking makes visible what the covenant already implies: every contribution has equal worth.</p>
+
+    <div class="callout green reveal">
+      <span class="callout-label">How It Works</span>
+      <p>Every hour of contribution beyond the daily labor requirement is logged. Credits accumulate and can be exchanged for services from other members, priority access to certain resources, or recognition in advancement considerations. The time bank is housed in the teaching platform and updated in real time.</p>
+    </div>
+
+    <div class="subsection-title reveal">Conflict Ritual</div>
+    <p class="reveal">Separate from the conflict resolution process. A monthly community circle in which appreciation and difficulty are spoken in equal measure — not a meeting with an agenda but a structured space: what am I grateful for, what is hard for me right now, what do I need from this community. Speech that has a designated place does not need to find an undesignated one.</p>
+
+    <div class="callout reveal" style="margin-top: 40px;">
+      <span class="callout-label">Protected Participants</span>
+      <p>Children and dependent family members who arrive with community members are protected participants. Their housing and food are unconditional — not contingent on their guardian's standing in the community. If a guardian leaves or is asked to leave, the community facilitates a safe transition that prioritizes the protected participant's wellbeing above all other considerations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 6: EXPENSES ── -->
+<section id="expenses">
+  <div class="container">
+    <span class="section-label">Section VI</span>
+    <h2 class="section-title reveal">Year 1 <em>Investment</em></h2>
+
+    <p class="reveal">The farm is designed to fund itself progressively — each stabilized enterprise covering the next. Walipini food production Month 3–4. Goat dairy and soap Month 4–5. HipCamp launches Month 6 once the communal shower, tent platforms with wood stoves, and walipini are all operational. Mushrooms Month 7–8. Remote income ($800/month) covers living expenses independently throughout.</p>
+
+    <div class="expense-legend reveal">
+      <div class="legend-item"><div class="legend-dot bar-infra" style="background:var(--adobe)"></div>Infrastructure</div>
+      <div class="legend-item"><div class="legend-dot bar-stock"></div>Livestock + Land</div>
+      <div class="legend-item"><div class="legend-dot bar-fiber"></div>Fiber + Specialty</div>
+      <div class="legend-item"><div class="legend-dot bar-ops"></div>Operations</div>
+    </div>
+
+    <div class="expense-chart reveal" id="expenseChart">
+      <!-- Populated by JS -->
+    </div>
+
+
+  </div>
+</section>
+
+<!-- ── SECTION 7: FUNDING ── -->
+<section id="funding">
+  <div class="container-wide">
+    <div class="container" style="padding: 0; max-width: 860px;">
+      <span class="section-label">Section VII</span>
+      <h2 class="section-title reveal">Grant <em>Landscape</em></h2>
+      <p class="reveal">The community's mission intersects with federal, state, and private grant programs across agriculture, housing, arts, and homelessness. The dual-entity structure (for-profit LLC + planned 501c3) unlocks the full funding landscape. A fiscal sponsor can be engaged for early applications while the nonprofit is being established.</p>
+    </div>
+
+    <div style="overflow-x: auto; margin-top: 40px;" class="reveal">
+      <table class="grant-table">
+        <thead>
+          <tr>
+            <th>Program</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Timing</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>USDA EQIP</td><td><span class="grant-badge badge-federal">Federal</span></td><td>$10k–25k</td><td>Before earthworks</td><td>50% cost-share on walipini, water harvesting, fencing</td></tr>
+          <tr><td>USDA REAP</td><td><span class="grant-badge badge-federal">Federal</span></td><td>$2.5k–5k</td><td>Before solar</td><td>25% grant on solar system</td></tr>
+          <tr><td>USDA CSP</td><td><span class="grant-badge badge-federal">Federal</span></td><td>$1k–5k/yr</td><td>Year 1+</td><td>Annual payments for documented conservation practices</td></tr>
+          <tr><td>USDA VAPG — Planning</td><td><span class="grant-badge badge-federal">Federal</span></td><td>Up to $75k</td><td>Year 2</td><td>Value-added processing planning; LLC eligible</td></tr>
+          <tr><td>USDA VAPG — Working Capital</td><td><span class="grant-badge badge-federal">Federal</span></td><td>Up to $250k</td><td>Year 3+</td><td>Working capital for established enterprises</td></tr>
+          <tr><td>USDA Rural Development</td><td><span class="grant-badge badge-federal">Federal</span></td><td>Varies</td><td>Year 1+</td><td>Community facilities; nonprofit or fiscal sponsor</td></tr>
+          <tr><td>SAMHSA PATH</td><td><span class="grant-badge badge-federal">Federal</span></td><td>Varies</td><td>Year 2+</td><td>Homelessness transition; directly funds shelter pipeline</td></tr>
+          <tr><td>HUD CDBG</td><td><span class="grant-badge badge-federal">Federal</span></td><td>Varies</td><td>Year 1+</td><td>Through Apache County; CLT-adjacent ownership model</td></tr>
+          <tr><td>NEA — Rural Arts</td><td><span class="grant-badge badge-federal">Federal</span></td><td>$10k–75k</td><td>Year 2+</td><td>Artist residency + studio infrastructure</td></tr>
+          <tr><td>NEA — Our Town</td><td><span class="grant-badge badge-federal">Federal</span></td><td>$25k–100k</td><td>Year 2+</td><td>Amphitheater + library as creative placemaking</td></tr>
+          <tr><td>AmeriCorps / CNCS</td><td><span class="grant-badge badge-federal">Federal</span></td><td>Varies</td><td>Year 2+</td><td>Land stewardship corps model; nonprofit required</td></tr>
+          <tr><td>Arizona Dept. of Housing</td><td><span class="grant-badge badge-state">State</span></td><td>Varies</td><td>Year 1+</td><td>Housing stability + homelessness prevention</td></tr>
+          <tr><td>AZ Commission on the Arts</td><td><span class="grant-badge badge-state">State</span></td><td>$2.5k–25k</td><td>Year 1+</td><td>Artist residency, rural arts access</td></tr>
+          <tr><td>AZ Specialty Crop Block Grant</td><td><span class="grant-badge badge-state">State</span></td><td>$5k–20k</td><td>Year 2+</td><td>Wine grapes qualify as specialty crop; LLC eligible</td></tr>
+          <tr><td>SARE</td><td><span class="grant-badge badge-federal">Federal</span></td><td>$7.5k–75k</td><td>Year 2+</td><td>Teaching and replication platform; farmer-rancher grants</td></tr>
+          <tr><td>Kresge Foundation</td><td><span class="grant-badge badge-private">Private</span></td><td>Varies</td><td>Year 3+</td><td>Community development, housing, food systems</td></tr>
+          <tr><td>Kendeda Fund</td><td><span class="grant-badge badge-private">Private</span></td><td>Varies</td><td>Year 2+</td><td>Regenerative agriculture + community resilience</td></tr>
+          <tr><td>W.K. Kellogg Foundation</td><td><span class="grant-badge badge-private">Private</span></td><td>Varies</td><td>Year 2+</td><td>Food systems, rural community, economic opportunity</td></tr>
+          <tr><td>Windgate Foundation</td><td><span class="grant-badge badge-private">Private</span></td><td>Varies</td><td>Year 2+</td><td>Craft arts; pottery, glass, blacksmithing aligned</td></tr>
+          <tr><td>Joan Mitchell Foundation</td><td><span class="grant-badge badge-private">Private</span></td><td>Varies</td><td>Year 2+</td><td>Artist communities + residency programs</td></tr>
+          <tr><td>Mary Reynolds Babcock</td><td><span class="grant-badge badge-private">Private</span></td><td>Varies</td><td>Year 2+</td><td>Economic mobility in rural communities</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION: THE PLATFORM ── -->
+<section id="platform">
+  <div class="container">
+    <span class="section-label">Section VIII</span>
+    <h2 class="section-title reveal">The <em>Platform</em></h2>
+
+    <p class="reveal">Ayni Commons is one farm on 40 acres. The platform is how it becomes ten farms, then a hundred. Every practice, decision, failure, and discovery documented here becomes a replicable blueprint for anyone who wants to fix broken land and build something worth living in. The goal is not to scale Ayni Commons. It is to help others help the land — and themselves.</p>
+
+    <div class="pullquote reveal">
+      "One farm demonstrates the possibility.<br>The platform multiplies it."
+    </div>
+
+    <div class="subsection-title reveal">What the App Does</div>
+    <p class="reveal">The teaching platform is a community application built from the ground up around one question: how do you replicate a functioning regenerative land stewardship community without having to start from scratch every time? The answer is documentation as infrastructure. Every system Ayni Commons builds — water, soil, fertility, community governance, pipeline management, creative life — is documented in enough detail that someone with different land, different climate, and different people can adapt it to their own context.</p>
+
+    <div class="creative-grid reveal" style="grid-template-columns: repeat(3, 1fr); margin-top: 32px;">
+      <div class="creative-cell">
+        <span class="creative-icon">🗺️</span>
+        <div class="creative-title">Replication Guide</div>
+        <p class="creative-desc">Step-by-step model for building a closed-loop regenerative community. Soil type, climate, and resource-level adaptable. Not a prescription — a framework built from real outcomes.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌍</span>
+        <div class="creative-title">Water System Design</div>
+        <p class="creative-desc">Documented water harvesting design adaptable to any topography. Swale layout, pond sequencing, infiltration calculations, and fog net placement based on real Apache County data.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">📊</span>
+        <div class="creative-title">Soil Remediation Timeline</div>
+        <p class="creative-desc">Annual soil organic matter data mapped to specific zones and practices. The proof that degraded land improves — published publicly because transparency is the point.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🤝</span>
+        <div class="creative-title">Community Governance Archive</div>
+        <p class="creative-desc">The four-tier pipeline, the covenant, the time-banking system, conflict ritual and resolution process — all documented so future communities start with a tested model rather than inventing one from scratch.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🧠</span>
+        <div class="creative-title">AI-Assisted Design Tools</div>
+        <p class="creative-desc">Food forest guild planner. Water harvesting calculator. Enterprise sequencing advisor. Crop coordination tool. Accessible to people with no formal agricultural training. The knowledge, democratized.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🎙️</span>
+        <div class="creative-title">Oral History Archive</div>
+        <p class="creative-desc">Recorded conversations with community members — their stories, skills, and experience. Other farms can replicate the system. No one else will have these voices. The archive is the community's irreplaceable memory.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🌱</span>
+        <div class="creative-title">Seed Library Network</div>
+        <p class="creative-desc">Open-pollinated, heirloom, and regionally adapted varieties documented and traded through the platform. A node in a regional food sovereignty network. What the community has in abundance, it shares.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">📡</span>
+        <div class="creative-title">Live Dashboard</div>
+        <p class="creative-desc">Soil health, water table depth, energy production, food yield, time bank circulation, pipeline advancement — updated monthly and published publicly. Not because there's nothing to hide. Because the proof has to be visible.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🔗</span>
+        <div class="creative-title">Practitioner Network</div>
+        <p class="creative-desc">Connecting people doing this work in similar climates. Trading knowledge, seed, technique, and community members. The isolation of the rural regenerative practitioner is a structural problem. The network is the fix.</p>
+      </div>
+      <div class="creative-cell">
+        <span class="creative-icon">🎵</span>
+        <div class="creative-title">Biosonification Archive</div>
+        <p class="creative-desc">The land's acoustic record — years of plant and fungal electrical activity translated to sound — published through the platform. How the voice of the land changes as the soil heals. This is what no other farm will have.</p>
+      </div>
+    </div>
+
+    <div class="subsection-title reveal" style="margin-top: 56px;">Why Documentation Is the Work</div>
+
+    <div class="two-col reveal">
+      <div>
+        <p>The federal policy framework that informs this community — submitted to the Senate in March 2026 — argues that land stewardship at community scale is one of the primary mechanisms for discharging the United States' deferred obligations in housing, food systems, and economic displacement.</p>
+        <p>That argument needs proof. Not theoretical proof. Operational proof. Real numbers from real land showing real improvement over time. Ayni Commons is the proof of concept. The platform is how the proof travels.</p>
+      </div>
+      <div>
+        <p>Every soil test that shows organic matter increasing is evidence. Every family that advances through the pipeline is evidence. Every earthen home built by community hands is evidence. Every hour logged in the time bank is evidence. Every seed saved and traded is evidence.</p>
+        <p>The platform makes that evidence visible, searchable, and usable by anyone who wants to build something similar anywhere in the country. That is not a side project. That is the mission scaling.</p>
+      </div>
+    </div>
+
+    <div class="pullquote reveal">
+      "The mushroom network is playing right now.<br>Most people just cannot hear it yet."
+    </div>
+
+    <div class="callout green reveal" style="margin-top: 40px;">
+      <span class="callout-label">The Vision at Scale</span>
+      <p>One functioning Ayni Commons, fully documented and openly published, is worth more to the broader project of land restoration and community sovereignty than ten undocumented operations. The platform is how a 40-acre high-desert farm in Apache County becomes a national model. The work is done on the land. The proof travels through the app.</p>
+    </div>
+
+    <div class="subsection-title reveal">Connection to Policy</div>
+    <p class="reveal">The platform connects directly to the policy framework already submitted to Congress: the Land Stewardship Corps concept in "What We Owe Each Other" proposes a national network of documented, replicable regenerative land communities as a mechanism for addressing rural economic displacement, housing instability, and ecological degradation simultaneously. Ayni Commons is Site One. The platform is the documentation that makes Site Two, Three, and Four possible without starting from nothing.</p>
+  </div>
+</section>
+
+<!-- ── PLANNER LINK ── -->
+<section style="padding: 48px 0; background: var(--cream); border-top: 1px solid var(--rule);">
+  <div class="container" style="text-align: center;">
+    <span class="section-label">Tools</span>
+    <h2 class="section-title" style="margin-bottom: 24px;">The <em>Build Planner</em></h2>
+    <p style="max-width: 520px; margin: 0 auto 32px; color: var(--stone); font-size: 15px; line-height: 1.7;">159 tasks. 12 categories. Every step from pre-purchase through Year 3. Three modes: Realistic, Best Case, and Bad Luck. Tap any task for full detail, dependencies, and what goes wrong.</p>
+    <a href="ayni_planner_mobile.html" style="display:inline-block;background:var(--soil);color:var(--sand);font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;padding:16px 36px;text-decoration:none;border-radius:2px;transition:background 0.2s" onmouseover="this.style.background='var(--clay)'" onmouseout="this.style.background='var(--soil)'">Open Build Planner →</a>
+  </div>
+</section>
+
+<!-- ── FOUNDER NOTE ── -->
+<div class="founder-note">
+  <div class="container">
+    <p>"I am not a mother. I am a devoted aunt, a writer, and a civic engineer. I have spent years documenting the gap between what our systems cost and who pays for them. This community is what I do after I make the argument."</p>
+    <p>"I want to build this with people. Not for people — with them. The pipeline from instability to ownership is not a charity model. It is a covenant. What we owe each other is a role, a roof, a vote, and eventually, land."</p>
+    <div class="founder-sig">Ayni Commons &nbsp;·&nbsp; Founded by [Name] &nbsp;·&nbsp; Concho, Arizona</div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>AYNI COMMONS &nbsp;·&nbsp; APACHE COUNTY, ARIZONA &nbsp;·&nbsp; INTERNAL VISION DOCUMENT &nbsp;·&nbsp; CONFIDENTIAL</p>
+</footer>
+
+<script>
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── EXPENSE CHART ──
+const expenses = [
+  { label: "Solar system (net after REAP grant)", lo: 7500,  hi: 12000, type: "infra" },
+  { label: "Goat starter herd (8–12 does + buck)", lo: 2500,  hi: 6000,  type: "stock" },
+  { label: "Canvas tents + wood stoves",           lo: 3000,  hi: 5000,  type: "infra" },
+  { label: "Work truck (farm operations)",         lo: 2000,  hi: 8000,  type: "infra" },
+  { label: "Walipini excavation + glazing",        lo: 2300,  hi: 4200,  type: "infra" },
+  { label: "Goat feed Year 1",                     lo: 2500,  hi: 4500,  type: "stock" },
+  { label: "Alpaca herd (3–5 females)",            lo: 1500,  hi: 6000,  type: "fiber" },
+  { label: "Insurance + permits + legal",          lo: 2000,  hi: 4000,  type: "ops"   },
+  { label: "Miscellaneous hardware",               lo: 2000,  hi: 4000,  type: "ops"   },
+  { label: "Sheep flock (5–10 ewes)",              lo: 750,   hi: 3500,  type: "fiber" },
+  { label: "Mushroom spawn + tunnel setup",        lo: 1500,  hi: 2500,  type: "stock" },
+  { label: "Mule acquisition + tack",              lo: 1500,  hi: 3500,  type: "infra" },
+  { label: "Ducks + geese",                        lo: 400,   hi: 800,   type: "stock" },
+  { label: "Apiary setup (2–4 hives, equipment)",    lo: 400,   hi: 1200,  type: "stock" },
+  { label: "Chickens + rabbits",                   lo: 500,   hi: 1200,  type: "stock" },
+  { label: "Soap + skin care supplies",            lo: 400,   hi: 800,   type: "ops"   },
+  { label: "5th wheel site setup (propane, electric)", lo: 800, hi: 1500, type: "infra" },
+  { label: "Fungal hub + soldier fly colony",      lo: 200,   hi: 500,   type: "stock" },
+];
+
+const MAX = 12000;
+const chart = document.getElementById('expenseChart');
+const colorMap = { infra: 'bar-infra', stock: 'bar-stock', fiber: 'bar-fiber', ops: 'bar-ops' };
+
+expenses.forEach((e, i) => {
+  const mid = (e.lo + e.hi) / 2;
+  const pct = Math.max((mid / MAX) * 100, 2);
+  const row = document.createElement('div');
+  row.className = 'expense-row reveal reveal-delay-' + ((i % 4) + 1);
+  row.innerHTML = `
+    <div class="expense-label">${e.label}</div>
+    <div class="expense-bar-track">
+      <div class="expense-bar-fill ${colorMap[e.type]}" style="width:0%" data-target="${pct}"></div>
+    </div>
+    <div class="expense-range">$${e.lo.toLocaleString()}–${e.hi.toLocaleString()}</div>
+  `;
+  chart.appendChild(row);
+});
+
+// Animate bars on scroll
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const bars = entry.target.querySelectorAll('.expense-bar-fill');
+      bars.forEach((bar, i) => {
+        setTimeout(() => {
+          bar.style.width = bar.dataset.target + '%';
+        }, i * 60);
+      });
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+barObserver.observe(chart);
+
+// Add total row
+const totalLo = expenses.reduce((s, e) => s + e.lo, 0);
+const totalHi = expenses.reduce((s, e) => s + e.hi, 0);
+const totalRow = document.createElement('div');
+totalRow.style.cssText = 'display:grid;grid-template-columns:260px 1fr 100px;gap:16px;align-items:center;margin-top:12px;padding-top:12px;border-top:2px solid var(--rule);';
+totalRow.innerHTML = `
+  <div style="font-size:13px;font-weight:500;color:var(--soil);text-transform:uppercase;letter-spacing:0.06em;">Total Year 1 Estimated</div>
+  <div style="font-size:12px;color:var(--stone);font-style:italic;">All livestock including alpacas and sheep, infrastructure, and operations</div>
+  <div style="font-size:13px;font-weight:500;color:var(--soil);text-align:right;white-space:nowrap;">$${totalLo.toLocaleString()}–${totalHi.toLocaleString()}</div>
+`;
+chart.appendChild(totalRow);
+
+// Re-apply reveal observer to dynamically added elements
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

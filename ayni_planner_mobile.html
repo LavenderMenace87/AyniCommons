@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ayni Commons — Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clay:#8B5E3C;--soil:#3D2410;--adobe:#C4956A;--sand:#E8D5B7;
+  --cream:#F5EFE4;--parchment:#FAF6EF;--sage:#7A8C6E;--moss:#4A5E3A;
+  --stone:#9E8E7A;--charcoal:#2E2A25;--ember:#A0522D;--gold:#B8963E;
+  --mist:#D4CFC7;--rule:rgba(140,94,60,0.15);--red:#8B2A1A;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--parchment);color:var(--charcoal);font-family:'Jost',sans-serif;font-weight:300;font-size:15px;display:flex;flex-direction:column}
+
+/* ── HEADER ── */
+.hdr{background:var(--soil);padding:14px 16px 12px;flex-shrink:0}
+.hdr-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--sand);line-height:1}
+.hdr-title em{font-style:italic;color:var(--adobe)}
+.hdr-sub{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(232,213,183,0.4);margin-top:3px}
+.mode-row{display:flex;gap:6px;margin-top:12px}
+.mbtn{flex:1;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;padding:8px 4px;border:1px solid rgba(232,213,183,0.2);background:transparent;color:rgba(232,213,183,0.4);cursor:pointer;border-radius:3px;transition:all 0.15s}
+.mbtn.active{background:var(--adobe);border-color:var(--adobe);color:white}
+
+/* ── CATEGORY CHIPS ── */
+.chips-wrap{background:var(--cream);border-bottom:1px solid var(--rule);overflow-x:auto;-webkit-overflow-scrolling:touch;flex-shrink:0;scrollbar-width:none}
+.chips-wrap::-webkit-scrollbar{display:none}
+.chips{display:flex;gap:6px;padding:10px 12px;white-space:nowrap}
+.chip{font-size:11px;font-weight:500;letter-spacing:0.08em;padding:6px 12px;border-radius:20px;border:1.5px solid var(--mist);background:white;color:var(--stone);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.chip.active{background:var(--charcoal);border-color:var(--charcoal);color:white}
+.chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── SORT + SEARCH BAR ── */
+.bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--cream);border-bottom:1px solid var(--rule);flex-shrink:0}
+.search{flex:1;background:white;border:1px solid var(--mist);border-radius:6px;padding:7px 10px;font-family:'Jost',sans-serif;font-size:13px;color:var(--charcoal);outline:none}
+.search::placeholder{color:var(--mist)}
+.sort-btn{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:7px 10px;background:white;border:1px solid var(--mist);border-radius:6px;color:var(--stone);cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap;flex-shrink:0}
+.sort-btn.active{background:var(--charcoal);border-color:var(--charcoal);color:white}
+
+/* ── TASK LIST ── */
+.list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.group-head{background:var(--cream);padding:8px 16px;font-size:9px;letter-spacing:0.35em;text-transform:uppercase;color:var(--stone);font-weight:500;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:8px}
+.group-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.group-count{margin-left:auto;font-size:10px;color:var(--mist)}
+
+/* ── TASK CARD ── */
+.task{border-bottom:1px solid var(--rule);background:white;cursor:pointer;transition:background 0.1s}
+.task:active{background:rgba(196,149,106,0.06)}
+.task.open{background:white}
+.task-head{display:flex;align-items:center;gap:0;padding:0}
+.task-stripe{width:4px;flex-shrink:0;align-self:stretch;border-radius:0}
+.task-main{flex:1;padding:13px 12px 13px 12px;min-width:0}
+.task-name{font-size:13px;color:var(--charcoal);line-height:1.35;font-weight:400}
+.task-meta{display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap}
+.tag{font-size:10px;padding:2px 6px;border-radius:3px;letter-spacing:0.04em;font-weight:500}
+.tag-time{background:var(--cream);color:var(--stone);border:1px solid var(--mist)}
+.tag-critical{background:rgba(139,42,26,0.1);color:var(--red)}
+.tag-bad{background:rgba(139,42,26,0.08);color:var(--red)}
+.tag-dur{background:rgba(122,140,110,0.1);color:var(--moss)}
+.task-chevron{padding:13px 14px;color:var(--mist);font-size:12px;flex-shrink:0;transition:transform 0.2s}
+.task.open .task-chevron{transform:rotate(180deg);color:var(--clay)}
+
+/* ── TASK BODY ── */
+.task-body{display:none;padding:0 16px 16px 16px;border-top:1px solid var(--rule)}
+.task.open .task-body{display:block}
+.task-desc{font-size:13px;color:var(--charcoal);line-height:1.7;margin-top:12px}
+.task-note{margin-top:10px;background:var(--cream);border-left:3px solid var(--adobe);padding:10px 12px;font-size:12px;color:var(--stone);line-height:1.5;font-style:italic}
+.task-bad{margin-top:8px;background:rgba(139,42,26,0.05);border-left:3px solid var(--red);padding:10px 12px;font-size:12px;color:var(--red);line-height:1.5}
+.task-bad::before{content:"⚠ Bad Luck: "}
+.task-deps{margin-top:10px}
+.task-deps-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--stone);margin-bottom:5px}
+.dep-pill{display:inline-block;font-size:10px;padding:2px 6px;background:var(--cream);border:1px solid var(--mist);color:var(--stone);border-radius:3px;margin:2px}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 24px;color:var(--stone)}
+.empty-icon{font-size:32px;margin-bottom:12px}
+.empty-text{font-size:13px;line-height:1.6}
+
+/* ── BOTTOM SUMMARY ── */
+.summary-bar{background:var(--soil);padding:10px 16px;display:flex;gap:0;flex-shrink:0;border-top:1px solid rgba(255,255,255,0.05)}
+.sum-item{flex:1;text-align:center;border-right:1px solid rgba(255,255,255,0.08)}
+.sum-item:last-child{border-right:none}
+.sum-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--sand)}
+.sum-label{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,213,183,0.4);margin-top:1px}
+
+/* ── PROGRESS INDICATOR ── */
+.progress-wrap{height:2px;background:rgba(255,255,255,0.08);flex-shrink:0}
+.progress-bar{height:100%;background:var(--adobe);transition:width 0.3s}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title"><em>Ayni</em> Commons</div>
+  <div class="hdr-sub">Build Planner · 496 CR 5152 · Concho AZ</div>
+  <div class="mode-row">
+    <button class="mbtn active" onclick="setMode('realistic')" id="mb-realistic">Realistic</button>
+    <button class="mbtn" onclick="setMode('optimistic')" id="mb-optimistic">Best Case</button>
+    <button class="mbtn" onclick="setMode('badluck')" id="mb-badluck">Bad Luck</button>
+  </div>
+</div>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<div class="chips-wrap">
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="bar">
+  <input class="search" type="search" placeholder="Search tasks…" oninput="onSearch(this.value)" id="searchInput">
+  <button class="sort-btn active" onclick="setSort('time')" id="sb-time">By Time</button>
+  <button class="sort-btn" onclick="setSort('cat')" id="sb-cat">By Type</button>
+</div>
+
+<div class="list" id="taskList"></div>
+
+<div class="summary-bar" id="summaryBar"></div>
+
+<script>
+const CATS={
+  admin:    {label:'Pre-Purchase & Legal',color:'#9E8E7A',icon:'🏛️'},
+  water:    {label:'Water Systems',       color:'#3A6B68',icon:'💧'},
+  energy:   {label:'Energy Systems',      color:'#B8963E',icon:'⚡'},
+  soil:     {label:'Soil & Land',         color:'#6B8E4E',icon:'🌱'},
+  fungal:   {label:'Fungal Hub',          color:'#7A5C8A',icon:'🍄'},
+  livestock:{label:'Livestock',           color:'#4A5E3A',icon:'🐐'},
+  food:     {label:'Food Production',     color:'#5C8A6E',icon:'🥬'},
+  structures:{label:'Structures',         color:'#8B5E3C',icon:'🏗️'},
+  creative: {label:'Creative & Studios',  color:'#6B5B8A',icon:'🎨'},
+  revenue:  {label:'Revenue Streams',     color:'#B8963E',icon:'💰'},
+  grants:   {label:'Grants & Admin',      color:'#2E6DA4',icon:'📋'},
+  community:{label:'Community Pipeline',  color:'#A0522D',icon:'👥'},
+};
+
+// [id, cat, name, description, month_start, duration_months, critical, deps, bad_luck_note, bad_luck_delay_months, field_note]
+const T=[
+['a01','admin','Hire water rights attorney','Apache County water rights are complex. A water attorney reviews the APN before you spend money on anything else. Cost: $500–1,500 for a consultation.',-5,1,true,[],'Attorney finds a pending water rights dispute on the parcel. 6-week resolution delay and $800 extra.',0.5,'Research Arizona water attorneys before anything else'],
+['a02','admin','Call ADWR — water rights on APN','Arizona Dept. of Water Resources: 602-771-8500. Verify groundwater rights, any adjudications, well permit status. Free call, critical information.',-5,0.5,true,[],'Well permit not properly transferred. Requires re-filing. 3 weeks + $300.',0,'Do before any purchase commitment'],
+['a03','admin','Independent water test','Test for uranium, arsenic, PFAS, nitrates, pH, coliform. Arizona-certified lab. Results take 2–3 weeks. Non-negotiable.',-4.5,0.5,true,[],'High uranium and arsenic detected. Whole-house RO required — $1,800 upgrade.',1,'Apache County aquifers can contain uranium and arsenic'],
+['a04','admin','SAM.gov registration','Required for REAP, VAPG, and other USDA programs. Free but takes 7–10 business days to activate. Do this months before you need it.',-5,0.5,false,[],'System glitch delays activation 3 weeks. File early.',0,'UEI number required for federal grants'],
+['a05','admin','FSA pre-appointment research','Read the FSA Beginning Farmer microloan guidelines. Gather tax returns or IRS non-filing letters (free at irs.gov), ID, any prior farm income records.',-4,1,true,[],'',0,'IRS non-filing letter takes 5 minutes at irs.gov'],
+['a06','admin','EQIP pre-application — NRCS contact','Contact local NRCS office. Understand what practices qualify for Apache County. EQIP must be filed before any earthwork — this is not optional.',-4,0.5,true,[],'',0,'File before a single shovel goes in the ground'],
+['a07','admin','FSA appointment — file both microloans','Bring: condensed plan, full business plan, IRS letters or tax returns, ID. File Ownership Microloan + Operating Microloan simultaneously. Both on one visit.',-3,0.5,true,['a05','a06'],'Loan officer requests additional documentation. Second appointment needed. 3-week delay.',3,'Critical path: land acquisition waits on this'],
+['a08','admin','REAP application filed','Before solar panels are ordered or installed. 25% grant on system cost. File with USDA Rural Development.',-3,0.5,false,[],'Missed application window. Pay full price for solar. $2,500–4,000 lost.',0,'File before ordering any solar equipment'],
+['a09','admin','Owner financing negotiation','Contact seller for terms. Typical: 10–20% down, 5–8% interest, 10–20 year amortization. Get terms in writing before FSA closing.',-4,2,false,[],'Seller wants full price before FSA closes. Bridge financing needed.',1,'Reduces FSA loan dependency if successful'],
+['a10','admin','Title search + survey','Hire title company. Confirm APN boundary for partial parcel. Confirm no liens, easements, or access issues.',-2,1,true,[],'Easement for utility access found on southwest corner. Adjusts layout.',0.5,'Partial parcel APN requires careful boundary review'],
+['a11','admin','LLC formation','Register LLC in Arizona. Operating agreement drafted. This is the entity that holds the FSA loan.',-3,1,true,[],'State filing backlog. 3-week delay. Use expedited filing ($50 extra).',0,'Must be done before closing'],
+['a12','admin','Community covenant — legal draft','Work with attorney to draft the covenant as a binding legal document. Four-tier pathway, ownership obligations, protected participant provisions.',-2,2,false,[],'',0,'This is the document people sign when they arrive'],
+['a13','admin','Land closing — Day 0','Keys in hand. FSA funds disbursed. Remediation begins today.',0,0.5,true,['a07','a10','a11'],'Partial APN split causes county delay. Closing pushed 6 weeks.',6,'Everything before this is pre-purchase'],
+['a14','admin','Starlink installation','Order before closing. Delivery takes 2–4 weeks. Rural internet is non-negotiable for remote work income and HipCamp management.',0,1,true,[],'Equipment backordered 6 weeks. Run on phone hotspot.',0,'Order before closing day'],
+['w01','water','Well assessment + pump test','Hire a licensed well contractor to assess pump condition, flow rate, and water depth. Budget $300–600. Do on Day 1.',0,0.5,true,[],'Pump failing. Replacement: $1,200–2,200.',1,'Do on Day 1 — everything depends on water'],
+['w02','water','RO system installed','Reverse osmosis for drinking and cooking water. Addresses uranium, arsenic, PFAS. Size for household + WWOOF household.',0.5,0.5,true,['w01'],'High arsenic requires whole-house system. $1,800 upgrade.',0,'Match spec to water test results'],
+['w03','water','Cistern (2,000 gallon)','Primary water storage. Gravity-fed where possible. Positioned for gravity flow to washing areas and garden zones.',1,1,false,['w01'],'',0,'Gravity flow eliminates pump dependency'],
+['w04','water','Contour survey for swale placement','Walk the land with an A-frame level. Mark swale locations on every significant contour. This is the water harvesting design — do before any earthwork.',0.5,1,true,[],'',0,'A-frame level costs $20 to build'],
+['w05','water','Primary swales — mule + hand tools','Build first 3–5 on-contour swales on key slopes. Mule-drawn blade for bulk, hand shaping for spillways.',2,3,false,['w04'],'Monsoon season: work morning hours only July–September. Add 3 weeks.',2,'These fill in the first monsoon rain'],
+['w06','water','Half-moon berms around food forest trees','Small crescent earthworks around each tree. Capture rainwater at root zone. Hand work, fast and cheap.',3,2,false,['w05'],'',0,'Major yield for minimal effort'],
+['w07','water','Primary pond excavated','Main water storage + habitat + chinampa pond. Rent mini excavator 2–3 days. Shape banks for chinampa attachment points.',5,2,true,[],'Rock shelf at 5 ft. Extra excavator day + $600. 2-week delay.',2,'Largest single earthwork on the property'],
+['w08','water','Infiltration ponds excavated','2–3 shallow spreading basins that sink water into the aquifer. Less depth, more surface area than storage pond.',6,2,false,['w04'],'Monsoon timing may delay if July–September.',2,'Recharges the well over years'],
+['w09','water','Filtration pond planted','Downstream of animal areas. Planted with bulrush, cattail, water hyacinth. Reed beds filter within 6–8 weeks.',7,1,false,['w07'],'',0,'Plant in warm season for fast establishment'],
+['w10','water','Rain chains installed','From every roof edge into cisterns or rock drip pools. Order before structures are roofed.',6,1,false,[],'',0,'Cheap, beautiful, functional'],
+['w11','water','Fog net assessment + installation','Walk the property at dawn for 2 weeks. Find where fog condenses. Install stainless mesh panels on T-posts.',3,1,false,[],'',0,'Free water. Takes observation first.'],
+['w12','water','Greywater cascade system','Sauna + shower graywater through planted biofilter beds (willow, comfrey, elderberry) then into orchard swales.',8,2,false,[],'',0,'Install with first permanent structures'],
+['w13','water','Hugelkultur beds — Phase 1','Bury juniper logs from clearing under mounded beds. Underground water reservoirs — reduce irrigation 60–80% once established.',3,3,false,['soil03'],'',0,'Logs rot slowly; moisture released for years'],
+['w14','water','Olla irrigation — key beds','Unglazed clay pots buried near roots, filled every 1–2 weeks. Near-zero evaporation. The cheapest drip system available.',5,1,false,[],'',0,'Make or buy; works for trees and shrubs'],
+['e01','energy','Solar array + battery bank','After REAP grant confirmation. Size for community use and growth. Hire licensed solar contractor.',1,1.5,true,['a08'],'Panel delivery delayed 5 weeks. Run on generator. $400 in fuel.',3,'REAP reduces cost 25%'],
+['e02','energy','Generator + fuel bridge','Running backup until solar is operational. Keep 30 gallons diesel on hand.',0,0.5,true,[],'',0,'Bridge power until solar installed'],
+['e03','energy','Wind site assessment','Record wind speed + direction for 4 weeks using a simple anemometer ($50). Identify turbine placement.',2,1,false,[],'',0,'Apache County wind is real at 6,200 ft'],
+['e04','energy','Small wind turbine installed','After site assessment confirms viability. 1–3 kW turbine on 30-ft tower. Feeds same battery bank as solar.',5,1,false,['e03'],'Turbine controller fault. Warranty repair — 3 weeks down.',2,'Complements solar on cloudy and winter days'],
+['e05','energy','Rocket mass heater — communal kitchen','First RMH in communal kitchen. Salvaged firebrick, cob surround, thermal mass bench. Heats the space 12–18 hrs on a small wood bundle.',6,2,false,['str03'],'Firebrick backorder 3 weeks. Use salvaged brick.',0,'Most efficient wood heat available'],
+['e06','energy','Biogas digester installed','Sized for goat + pig manure + kitchen scraps. Flexible membrane type. Produces cooking gas + liquid fertilizer.',7,2,false,['liv10','liv01'],'Fitting leak week 2. Fix takes 10 days. Minor.',0,'Eliminates propane for cooking permanently'],
+['e07','energy','Passive solar design — all structures','Every structure sited with solar gain calculation. South-facing, correct overhang. This is design work, zero cost.',-2,1,false,[],'',0,'Zero cost when designed in from the start'],
+['soil01','soil','Baseline soil test — 5 zones','Send samples to university extension lab. Get organic matter %, pH, nutrients, texture. This is what everything else measures against.',0,0.5,true,[],'',0,'Arizona Cooperative Extension; $20–40/sample'],
+['soil02','soil','Site map + zone design (1–5)','Walk all 40 acres. Map: fence lines, slopes, drainage, sun/wind exposure, soil variations, existing trees. Design permaculture zones 1–5.',0.5,1,true,[],'',0,'Zone 1 nearest the home; Zone 5 is the wild edge'],
+['soil03','soil','Juniper clearing — Phase 1','Priority: clear from home area, food forest zone, firebreak perimeter. Chainsaw + mule haul. All material processed: timber, biochar, wood chips.',1,6,false,[],'More juniper than expected. Hire day labor 3 days. $300.',0,'The clearing is the raw material for building and biochar'],
+['soil04','soil','Native grass reseeding after clearing','Blue grama, sideoats grama, black-eyed Susan. Seed immediately after clearing before invasives colonize.',2,1,false,['soil03'],'',0,'$50–120 in seed; timing is critical'],
+['soil05','soil','Three-bin compost system established','Hot compost: goat manure, kitchen scraps, wood chips, crop residues. Turn weekly. First finished compost in 8–12 weeks.',2,1,true,[],'',0,'Start before animals arrive so you are ready'],
+['soil06','soil','Biochar retort kiln built','Salvaged 55-gallon steel drums + pipe fittings. Burns juniper clearing waste to produce biochar.',3,1,false,['soil03'],'',0,'Convert the problem (juniper) into an asset (biochar)'],
+['soil07','soil','Biochar charged + first application','Soak fresh biochar in compost tea 2 weeks before applying. Apply to food forest zone first.',4,1,false,['soil06'],'',0,'Charged biochar has active biology, not just carbon'],
+['soil08','soil','Year 1 end soil test — compare to baseline','Quantify organic matter gain. First data point for the teaching platform. Publish results.',12,0.5,false,['soil01'],'',0,'This is the proof of concept in numbers'],
+['soil09','soil','Cover crop — winter seeding','Austrian winter peas, winter rye, crimson clover. Seeded in October. Fixed nitrogen + soil protection.',9,1,false,[],'',0,'Free fertility; plant every fall'],
+['soil10','soil','Pollinator corridors planted','Native wildflower strips along fence lines, pond edges, food forest perimeter.',5,2,false,['food03'],'',0,'Habitat for beneficial insects; also beautiful'],
+['fun01','fungal','Below-grade hub site selected','Between walipini and food forest, partial shade, accessible. Mark footprint. Check for underground utilities.',2,0.5,true,[],'',0,'Must connect physically to walipini'],
+['fun02','fungal','Hub excavated + built','4 ft deep × 8×10 ft trench. Earthbag walls, earthen floor, corrugated roof covered with soil. Ventilation pipe. Access hatch.',3,2,true,['fun01'],'Caliche layer. Extra hand work. 1 week added.',1,'Below grade for thermal stability'],
+['fun03','fungal','Six-barrel fertility system installed','6 × 55-gallon food-grade barrels labeled: AA, FPJ, IMO, compost tea, mycorrhizal inoculant, wood chip habitat. Plumbed drains.',4.5,1,true,['fun02'],'',0,'This is the farm\'s complete fertility program'],
+['fun04','fungal','AA — Fish Amino Acids, first batch','Tilapia scraps + sorghum syrup (brown sugar Year 1). Layer 1:1. Seal. Ferment 2–4 weeks. Dilute 1:500 for high-nitrogen liquid feed.',5,0.5,true,['fun03'],'',0,'Cost $0 — tilapia scraps already on site'],
+['fun05','fungal','FPJ — Fermented Plant Juice, first batch','Fresh comfrey + sorghum syrup. Pack and press. Strain after 1 week. Growth hormones and enzymes for foliar spray.',5,0.5,false,['fun03','food05'],'',0,'Plant comfrey first; takes 6–8 weeks to establish'],
+['fun06','fungal','IMO collection — Indigenous Microorganisms','Find white mycelium on forest floor at dawn. Colonize cooked rice for 3–5 days. Mix with sugar. Culture and multiply.',3,1,true,[],'',0,'You are amplifying biology already adapted to your land'],
+['fun07','fungal','Compost tea brewing setup','Air pump + 5-gallon bucket. Steep compost + forest soil + duck pond water 24–48 hrs. Apply immediately.',5,0.5,false,['soil05','liv05'],'',0,'Duck pond water is already teeming with biology'],
+['fun08','fungal','Mycorrhizal inoculant — apply at planting','Glomus species. Once per planting hole for all trees and perennials. Year 1 only — self-perpetuating forever after.',4,1,true,[],'',0,'Only purchased input in the whole fertility program'],
+['fun09','fungal','Wood chip habitat laid — all beds','Cedar and juniper chips 4–6 inches deep on all beds and food forest. Never tilled in. Permanent.',4,2,false,['soil03'],'',0,'Mycorrhizal networks live in this layer — do not disturb'],
+['fun10','fungal','Satellite inoculant stations — individual walipinis','Small secondary chambers connected to main hub by buried pipe. Each member walipini gets its own satellite.',18,3,false,['fun03'],'',0,'Built when individual walipinis are built (Tier 3)'],
+['liv01','livestock','Predator-proof chicken + rabbit housing built','Hardware cloth on all sides including floor. Roost bars. Nest boxes. Raccoon-proof latch. Build this before animals arrive.',1,2,true,[],'Predator breach Month 3. Lost 6 hens. Rebuild with hardware cloth floor. $180 + birds.',0,'Hardware cloth is not optional'],
+['liv02','livestock','Chickens acquired (15–20 + rooster)','Heritage dual-purpose breeds: Plymouth Rock, Rhode Island Red, Black Australorp. Tested healthy.',1.5,0.5,true,['liv01'],'First order out of stock. 3-week wait.',0,'Heritage breeds for eggs and meat'],
+['liv03','livestock','Rabbits — breeding colony started','New Zealand White or Californian. 2 does + 1 buck. First litter in 30 days. Manure goes direct to beds.',1.5,0.5,false,['liv01'],'',0,'Fastest protein production per sq ft available'],
+['liv04','livestock','Mule sourced and acquired','Draft mule, 14–16 hands. Proven for work — not green. Collar, harness, traces, single tree, blade attachment.',1,1,false,[],'Finding good working mules takes time. Allow 6 weeks.',2,'Worth paying for proven temperament'],
+['liv05','livestock','Ducks acquired (10–15)','Khaki Campbell for eggs, Muscovy for meat and insect control. Integrate into pond system once pond is ready.',4,0.5,false,['w07'],'',0,'Pond must exist first'],
+['liv06','livestock','Geese acquired (4–6)','African or Toulouse. Grass management, alarm system, meat.',4.5,0.5,false,['w07'],'',0,'Best alarm system on the farm'],
+['liv07','livestock','Quail colony setup','Coturnix quail. Wire housing, deep bedding. Egg production at 6 weeks. 50 birds = ~40 eggs/day.',1.5,0.5,false,[],'Snake gets in Month 2. Hardware cloth on the bottom.',0,'Low management, high yield'],
+['liv08','livestock','Black soldier fly colony','Starter culture in ventilated bin. Feed kitchen waste, spent substrate, manure. Self-sustaining in 4–6 weeks. Larvae fed to poultry and fish.',2,0.5,false,[],'',0,'Free protein; eliminates fly breeding in waste'],
+['liv09','livestock','Large-animal vet identified','Find vet in Show Low or St. Johns. Schedule a farm visit before you need an emergency. Know who to call at 2am.',1,0.5,true,[],'Nearest large-animal vet is 45 min away.',0,'Do this before goats arrive'],
+['liv10','livestock','Goat starter herd acquired (8–12 does + buck)','CAE-tested, CL-tested. Dairy breeds: Nubian, LaMancha, or Nigerian Dwarf. Delivered into existing corrals.',3,0.5,true,['liv09','liv01'],'Health issue discovered 3 weeks in. Vet + quarantine + $1,500 in milk loss.',2,'Tested animals only — do not negotiate on health status'],
+['liv11','livestock','Milking rotation established','Daily milking 6am + 6pm. Record milk yield per animal from Day 1. First week is acclimation.',3.5,1,true,['liv10'],'Mastitis in 2 does Month 5. Treatment + reduced yield 6 weeks.',0,'Build the habit from Day 1'],
+['liv12','livestock','Goat feed + mineral program','Local hay source identified. Loose minerals free-choice. Grain for milking does. Deworming protocol with vet.',3,1,false,['liv10'],'Local hay supplier runs dry in March. Source second supplier now.',0,'Hay security in AZ is real'],
+['liv13','livestock','Alpacas acquired (3–5 females)','Health-tested, from reputable AZ/NM breeder. Also serve as herd guardians for chickens.',5,0.5,false,[],'Seller flakes. Find backup seller. 3 extra weeks + $200 fuel.',2,'Schedule 6+ months ahead; market is thin'],
+['liv14','livestock','Sheep acquired (5–10 ewes)','Hair sheep (Katahdin, Dorper) for meat + wool breeds (Rambouillet) for fiber.',5.5,0.5,false,[],'',0,'Hair sheep need no shearing; wool sheep do'],
+['liv15','livestock','First alpaca shearing','Annual event. Hire fiber shearer — schedule months ahead. Fiber sorted, skirted, stored for spinning.',15,0.5,false,['liv13'],'AZ shearer booked solid. Find NM shearer. Add $200 travel.',0,'Schedule shearer before you buy the alpacas'],
+['liv16','livestock','Kunekune pigs acquired — Year 1','1 male + 1 female. The earlier they start clearing the food forest understory the better. Separate from garden beds.',8,0.5,false,[],'',0,'Low-rooting breed; safe for food forest'],
+['liv17','livestock','Apiary — 2–4 hives installed','Hive assembly, SE-facing placement. Package bees ordered and installed. First inspection 1 week after install.',4,1,false,[],'First-year hive loss 30–40%. One hive dies. Requeen or replace package. $120.',0,'Budget to replace one hive in Year 1'],
+['liv18','livestock','Mason bee houses installed','Simple wooden houses with reed tubes near food forest and walipinis. Zero management. Excellent pollinators.',3,0.5,false,[],'',0,'Free; solitary bees outpollinate honeybees for many crops'],
+['food01','food','Walipini site selected + engineered','South-facing slope. No underground utilities. Calculate excavation (~150 cubic yards). Plan drain tile.',1,0.5,true,[],'',0,'Orientation is everything; south-facing mandatory'],
+['food02','food','Walipini excavated','2-day mini excavator rental. 6–8 ft deep, 20×30 ft. Drain tile at bottom. Walls left rough for earthen plaster.',2,1.5,true,['food01'],'Caliche at 5 ft. Extra rental day + $600. 2-week delay.',2,'Largest dig after the primary pond'],
+['food03','food','Walipini glazed + growing beds built','Polycarbonate glazing tilted at latitude angle. Stone raised beds. Drainage confirmed.',3,2,true,['food02'],'Wrong-spec polycarbonate ordered. Reorder adds 3 weeks.',2,'Tilt angle critical for winter solar gain'],
+['food04','food','Walipini first planting','Microgreens (first harvest Day 7). Winter greens. Herbs. Seedling starts. Year-round food production begins.',4.5,1,true,['food03'],'',0,'Microgreens first: fast food + fast cash'],
+['food05','food','Comfrey planted throughout food forest','12–20 crowns. 4–5 harvests/season for FPJ. Dynamic accumulator. Use Bocking 14 — sterile, won\'t spread.',2,0.5,true,[],'',0,'Source Bocking 14 variety only'],
+['food06','food','Food forest design finalized','Species list by guild layer: canopy, sub-canopy, shrub, herbaceous, ground cover, root layer, vine. AZ Zone 6 species.',1,1.5,true,[],'',0,'Do this on paper before buying a single tree'],
+['food07','food','Food forest — Phase 1 planting (trees)','Canopy and sub-canopy with full guild. Each tree: nitrogen fixer + comfrey + allium + ground cover. Mycorrhizal inoculant in every hole.',4,2,true,['food06','fun08'],'Plant in fall; spring planting in AZ heat is hard.',1,'Fall planting preferred in AZ'],
+['food08','food','Food forest — Phase 2 (shrubs + berries)','Currant, gooseberry, elderberry, wolfberry, pomegranate. Second growing season when trees are established.',13,2,false,['food07'],'',0,'Shrub layer catches the most rainfall'],
+['food09','food','Medicinal herb garden established','Echinacea, valerian, elderberry, yarrow, calendula, St. John\'s wort, passionflower, mullein, holy basil, lavender.',4,2,false,['food03'],'',0,'Reduces purchased medicine costs over time'],
+['food10','food','Seed library — first collection','Save seed from first walipini harvests. Label, dry, store in glass jars. Document variety, source, date, notes.',6,1,false,[],'',0,'Start saving from Day 1 of harvest'],
+['food11','food','Chinampa floating beds — primary pond','Once pond is established 6+ months: floating raft gardens from buoyant frames + compost.',12,2,false,['w07'],'',0,'Pond must be mature before chinampas go in'],
+['food12','food','Vineyard planted — pergola framework first','Build pergola from juniper timber over gathering spaces. Bare-root vines: Malvasia Bianca, Vermentino, Sangiovese.',9,2,false,[],'',0,'Dormant bare-root planting: October–February'],
+['food13','food','Individual member walipinis (Tier 3)','10×16 ft each. Community builds together. Satellite inoculant station. Assigned staple crop.',24,3,false,['fun10'],'Year 2–3 depending on pipeline pace.',1,'Built when member achieves Tier 3 status'],
+['food14','food','Aquaponics — pond integration','Fish tanks connected to growing beds. Tilapia. Fish waste fertilizes plants; plants filter water.',14,3,false,['w07'],'',0,'Year 2; requires established pond'],
+['food15','food','Heritage wheat + outdoor bread oven link','Plant heritage wheat (emmer, einkorn) in a small plot. Mill by hand. Bread oven builds community ritual.',9,2,false,['str04'],'',0,'Bread oven built first; wheat planted in fall'],
+['mush01','food','Mushroom tunnel site selected','Below-grade, adjacent to fungal hub. Calculate excavation. Humidity + temperature targets for species.',3,0.5,true,[],'',0,'Below grade for thermal and humidity stability'],
+['mush02','food','Mushroom tunnel excavated + built','6×20 ft trench, 4 ft deep. Earthbag walls. Metal roof under soil. Humidity misters on timer. Substrate shelving.',4,2,true,['mush01','fun02'],'Condensation issues with first roof design. Rebuild with vapor barrier. 2 weeks.',1,'Humidity is the most critical design element'],
+['mush03','food','First substrate prepared','Hardwood pellets or straw + coffee grounds. Pasteurize with hot water. Cool completely before inoculation. Resident handles substrate prep; founder handles everything else.',7.5,0.5,true,['mush02'],'',0,'Do not rush the cool-down; heat kills spawn'],
+['mush04','food','First inoculation — oyster + lion\'s mane','Start with oysters: most contamination-resistant. Lion\'s mane second. Shiitake after you have the process down.',6,0.5,true,['mush03'],'First batch contaminated. Restart. $600 spawn + 6-week delay.',2,'Oysters first; most forgiving species'],
+['mush05','food','First harvest + restaurant test','Oyster first harvest Month 7–8. Sample box to Show Low restaurants. Get feedback before scaling.',7.5,1,true,['mush04'],'Month 9 due to contaminated first batch.',1.5,'Restaurant relationships take 2–3 visits to build'],
+['mush06','food','Show Low restaurant accounts established','2–3 restaurants on regular weekly order. Invoice + payment process established.',10,2,false,['mush05'],'Month 12 in bad luck mode.',1,'Consistent quality + consistent delivery is the product'],
+['mush07','food','King stropharia inoculated into wood chips','Outdoor wood chip beds inoculated. Low maintenance, soil-building, edible fruiting bodies.',8,1,false,['fun09'],'',0,'Soil-building and edible; low effort'],
+['mush08','food','Spawn production — reduce purchased costs','Learn agar + liquid culture. Produce own spawn. Reduces spawn cost ~80% from Year 2.',14,2,false,['mush06'],'',0,'Year 2 skill'],
+['str01','structures','Communal shower — first permanent build','Adobe or earthbag. Proper drainage. Hot water from solar thermal or on-demand propane. This unlocks HipCamp.',3,3,true,[],'Monsoon season pauses cob work if July–September timing.',2,'First permanent structure on the property'],
+['str02','structures','Tent platforms — 3 units for HipCamp','Elevated wood platforms on concrete piers. 12×14 ft. Canvas wall tent + wood stove. This is what guests pay for.',3.5,2,true,[],'Canvas quality matters in AZ monsoons. Do not cheap out.',0,'HipCamp listing waits on these + shower being complete'],
+['str03','structures','Communal kitchen — earthen','Adobe walls, rocket mass heater, solar electric, prep surfaces. Connected to outdoor bread oven.',6,4,false,['e05'],'',0,'Rocket mass heater is the anchor; build around it'],
+['str04','structures','Outdoor bread oven + fire circle','Stone or cob oven, wood-fired. Fire circle with juniper log benches. The community\'s gathering heart.',7,2,false,[],'',0,'Stone from clearing; labor is the main cost'],
+['str05','structures','Storage + tool structures','Adobe or pole barn. Tool library + feed storage + equipment. Vermin-proof. Lock on tool library.',5,2,false,[],'',0,'Feed storage before goats arrive'],
+['str06','structures','Founder\'s earthen home','Adobe, cob, rammed earth. Custom to site. Solar orientation. Rocket mass heater. The house that teaches every technique.',8,8,true,[],'Rainy season slows cob curing. Add 6 weeks.',2,'This home teaches the community every technique used in later builds'],
+['str07','structures','Fermentation cave — below grade','Adjacent to communal kitchen. 8×12 ft, 5 ft deep. Stone walls. Earthen floor. 55–60°F naturally year-round.',9,3,false,[],'',0,'Below-grade = free temperature control'],
+['str08','structures','Preservation kitchen','Separate room from daily kitchen. Pressure canners, dehydrators, cheese vat, soap surfaces, dedicated water.',10,3,false,['str03'],'',0,'Cannot share space with daily cooking'],
+['str09','structures','WWOOF sleeping units (2–3)','Small adobe or earthbag sleeping rooms. 8×10 ft each. Rocket mass heater or wood stove.',4,4,false,['str01'],'',0,'Workers need private sleeping space'],
+['str10','structures','Meditation gardens — Phase 1','Stone labyrinth (also water harvesting path). Gravity-fed water feature. Stone benches. First plantings.',8,3,false,['w07','soil10'],'',0,'Stone from clearing and pond excavation; nearly free'],
+['str11','structures','Temazcal','Low dome from on-site stone + earthbag. Fire pit for heating stones. Crawl-in entrance. Ceremony space.',10,2,false,[],'',0,'Stone from clearing; low cost, high meaning'],
+['str12','structures','Tool library + repair shop (dedicated)','Dedicated earthen structure. Pegboard + documented inventory. Sharpening station. Workbench.',12,2,false,['str05'],'',0,'Every tool documented in the teaching platform'],
+['str13','structures','Knowledge hub — earth-sheltered library','Carved into hillside. Thick earthen walls. Reading alcoves. Darkroom. Writing room. Media node. Seed vault.',14,6,false,[],'',0,'Year 2 major build; your writing room is in here'],
+['str14','structures','Amphitheater carved from hillside','Cut-and-fill using earth from walipini + pond excavations. Stone-faced risers. Grape vine pergola.',18,4,false,['w07','food12'],'',0,'Excavation already done; labor is the cost'],
+['str15','structures','Below-grade music studio','Adjacent to amphitheater. Cut into same hillside. Natural acoustic treatment from earth.',20,4,false,['str14'],'',0,'Year 2; after amphitheater is cut'],
+['cre01','creative','Forge + blacksmith area','Propane or coal forge. Anvil (150–200 lb). Hardy tools. Quench tank. Covered outdoor area.',12,3,false,[],'',0,'Year 2; steel tools take time to source'],
+['cre02','creative','Pottery studio + kiln','Wheels, wedging table, drying racks. Kiln built from adobe and firebrick. Community building project.',12,4,false,[],'Firebrick lead time is 6–8 weeks. Order early.',2,'Order firebrick before you need it'],
+['cre03','creative','Woodcarving studio setup','Benches, tool storage, sharpening station. Juniper from clearing is the primary material.',10,1,false,[],'',0,'Juniper: free, aromatic, beautiful'],
+['cre04','creative','Fiber arts studio — spinning + looms','Wheels and looms sourced (used). Felting table. Dye kitchen with ventilation.',14,2,false,['liv15'],'',0,'Open when you have fiber from first alpaca shearing'],
+['cre05','creative','Biosonification — plant electrode install','Plantwave or equivalent on food forest tree, walipini beds, mushroom mycelium, pond reeds. Start with 4–6 devices.',10,2,false,[],'',0,'Start with 4–6 devices; expand as budget allows'],
+['cre06','creative','Biosonification processing hub setup','Hardware in knowledge hub. MIDI processing. Speaker amplifier. Raw biological signal archive.',12,1,false,['cre05','str13'],'',0,'The land\'s voice, archived permanently'],
+['cre07','creative','Property speaker network','Weatherproof outdoor speakers along paths, meditation gardens, amphitheater, tunnel entries.',14,2,false,['cre06'],'',0,'Guests wake to the sound of the food forest'],
+['cre08','creative','Art studio — dedicated space','North-facing window. Earthen walls. Open studio hours for all tiers. Artist residency anchor.',16,2,false,['str13'],'',0,'Within the knowledge hub complex'],
+['cre09','creative','Glass blowing hot shop','Propane glory hole + annealing oven. Marver table. Steel pipes. Ventilation critical.',20,3,false,[],'',0,'Year 2–3; advanced creative enterprise'],
+['rev01','revenue','Farmers market registration — Show Low','Apply for Show Low Farmers Market vendor permit. Attend as observer first. Bring soap, mushrooms, honey.',7,1,false,['mush05','rev03'],'',0,'Market relationships take time; start early'],
+['rev02','revenue','Goat milk soap — first batch','Lye safety equipment. Mold setup. First batch needs 4 weeks cure time before sale.',5,1,true,['liv11'],'Mastitis reduces milk volume. Delay first batch 6 weeks.',1,'4 weeks cure minimum before sale'],
+['rev03','revenue','Soap labels + branding','Simple design using farm name. Required for farmers market and online sale.',6,0.5,false,['rev02'],'',0,'Print at Staples if needed; upgrade later'],
+['rev04','revenue','Artisan cheese — first aged wheel','Consistent milk volume needed. Aging: 60 days minimum for legal sale in AZ. Fermentation cave required.',7,3,false,['liv11','str07'],'',0,'AZ cottage food: hard cheese aged 60+ days can be sold direct'],
+['rev05','revenue','HipCamp listing goes live','NOT until: shower operational, 2 tent platforms complete with wood stoves, walipini visible and producing, one beautiful element (meditation garden or biosonification). The farm must have a story worth arriving to.',6,1,true,['str01','str02','food04'],'First reviews take 8–12 weeks to accumulate.',2,'Not empty desert — a working regenerative farm with fresh food and earthen spaces'],
+['rev06','revenue','HipCamp — additional glamping units','Add vintage trailers or tent platforms as demand demonstrates. Scale with bookings, not ahead of them.',12,3,false,['rev05'],'',0,'Each unit multiplies nightly revenue'],
+['rev07','revenue','Honey — first harvest','First harvest Month 10–14 for new colonies. ~20 lb per hive Year 1. Extract, jar, label.',12,1,false,['liv17'],'Lost one hive Year 1. Harvest from remaining hives only.',0,'Patient enterprise; worth the wait'],
+['rev08','revenue','Beeswax products — candles + lip balm','Render wax from cappings. Candle molds. Lip balm tins. High margin, small volume.',13,1,false,['rev07'],'',0,'Low investment, high margin'],
+['rev09','revenue','Pack goat hikes — first offering','Once herd is well-settled and goats are halter-trained. 2-hour guided hike. $40–60/person.',7,2,false,['liv12'],'',0,'Train goats to halter from Month 4'],
+['rev10','revenue','Artist residency program launched','Self-selection application form. 2–4 week residencies. Housing + food for documented contribution.',14,2,false,['str13','cre01'],'',0,'Year 2 — requires studio spaces + community kitchen'],
+['rev11','revenue','Survival camps — first bi-annual','Desert survival immersion. 8–15 participants, 3–4 days, $400–700/person. Spring + fall only.',12,1,false,['liv12'],'',0,'Avoid summer heat. Two per year.'],
+['rev12','revenue','Guided hunts — first season','Apache County elk + deer. Arizona guide license required. Partner with licensed guide while applying for yours.',10,2,false,[],'Guide license takes 3–6 months. Start early.',3,'Partner first; apply for own license simultaneously'],
+['rev13','revenue','Teaching platform — first public data','Soil tests, water table depth, food production data, pipeline advancement. First monthly dashboard published.',12,1,false,['soil08'],'',0,'Transparency is the product; publish everything'],
+['grnt01','grants','EQIP application filed','File with NRCS before any earthwork. 50% cost-share on walipini, water harvesting, fencing.',-2,0.5,true,[],'Missed window. Wait 6 months. $10,000–15,000 in cost-share lost.',0,'CRITICAL: No earthwork before this is filed'],
+['grnt02','grants','REAP application filed','Before solar installation. 25% grant on solar system cost.',-2,0.5,true,[],'Missed window. Pay full price for solar. $2,500–4,000 lost.',0,'File before ordering any solar equipment'],
+['grnt03','grants','CSP enrollment','Conservation Stewardship Program. Annual payments for documented conservation practices.',10,1,false,[],'',0,'$1,000–5,000/year; requires documented practices'],
+['grnt04','grants','AZ Specialty Crop Block Grant','Wine grapes and mushrooms qualify. LLC eligible. Apply after 1 year of documented production.',12,2,false,['mush06'],'',0,'Year 2 application'],
+['grnt05','grants','501(c)(3) nonprofit filing','Articles of Incorporation → IRS Form 1023 → State charity registration. Takes 3–9 months.',3,6,false,['a11'],'IRS processing backlog. Can take 9–12 months. File early.',3,'Fiscal sponsor bridges the gap'],
+['grnt06','grants','Fiscal sponsor identified','Existing 501(c)(3) with aligned mission. Grounded Solutions Network, WWOOF USA, or regional community development org.',3,1,false,[],'',0,'Required for early NEA, HUD, and SAMHSA applications'],
+['grnt07','grants','SARE farmer-rancher grant','Up to $22,500 for on-farm research. Teaching platform + soil remediation documentation qualifies.',10,2,false,['soil08'],'',0,'Strong application with 1 year of documented results'],
+['grnt08','grants','VAPG planning grant — Year 2','Value-Added Producer Grant, planning phase. Up to $75,000. Requires 1 year of production evidence.',13,3,false,['rev04','mush06'],'',0,'Most competitive USDA grant; professional grant writer = ROI positive'],
+['grnt09','grants','NEA Rural Arts application','Artist residency + studio infrastructure. Requires 501(c)(3) or fiscal sponsor.',15,2,false,['grnt05','cre01'],'',0,'Year 2; requires documented residency program'],
+['grnt10','grants','SAMHSA PATH application','Projects for Assistance in Transition from Homelessness. Requires 501(c)(3). Directly funds the shelter pipeline.',18,3,false,['grnt05','comm04'],'',0,'Year 2–3; requires documented pipeline outcomes'],
+['grnt11','grants','VAPG working capital — Year 3+','Up to $250,000. Requires 2+ years of documented production.',30,4,false,['grnt08'],'',0,'Largest available USDA grant; worth the documentation'],
+['comm01','community','Self-selection materials written','Honest, complete, plain-language description of community expectations. Physical demands, desert heat, communal living, daily labor. Publish before anyone inquires.',1,1,true,[],'',0,'Most important document for preventing bad fits'],
+['comm02','community','WWOOF USA profile created','Photos of the work + landscape. Honest accommodations and task description. Publish when tent housing is ready.',2,0.5,true,['str09'],'First WWOOF volunteer leaves in week 2. Normal. Recruit again.',0,'Wait until tent housing is ready'],
+['comm03','community','Workaway profile created','Secondary to WWOOF. Broader audience, different demographic.',2.5,0.5,false,['comm02'],'',0,'Different volunteer demographic'],
+['comm04','community','Shelter outreach — first letters sent','Write to Apache County shelters, Show Low women\'s center, Flagstaff transitional housing.',4,1,false,[],'Trust-building with shelter directors takes months. First referral Month 10–14.',2,'Relationship-building, not a one-time ask'],
+['comm05','community','Community covenant signed — first member','First person who arrives signs the covenant. This is when the covenant becomes real.',3,0.5,true,['a12','comm02'],'',0,'The covenant was a document; now it is an agreement'],
+['comm06','community','Time banking system implemented','hOurworld.org offers free setup. Every member gets an account. First credits logged Day 1.',4,1,false,['comm05'],'',0,'Tracks contribution beyond daily labor requirement'],
+['comm07','community','Monthly community circle — first','First structured gathering: appreciation + difficulty. Not a meeting with an agenda. A space to speak.',4,0.5,false,['comm05'],'',0,'Monthly from this point forward; non-optional'],
+['comm08','community','Tier 1 → Tier 2 first advancement','First member completes 60-day entry and demonstrates competency in all 6 leadership areas.',8,1,false,['comm05'],'Month 12–14 if pipeline started slowly.',2,'The community is now two tiers deep'],
+['comm09','community','6-month probation begun — first resident','Tier 2: private sleeping space, full voice (no vote yet). 6-month clock starts.',9,6,false,['comm08'],'',0,'Unanimous full member vote at the end'],
+['comm10','community','Tier 2 → Tier 3 unanimous vote','Full member status. Full vote. Community builds their custom earthen home.',15,1,false,['comm09'],'Year 2 milestone.',0,'The community builds the home together'],
+['comm11','community','Skill inventory — first formal document','Document every skill present in the community. Quarterly updates. Identify gaps.',6,1,false,['comm05'],'',0,'Prevents skill-gap crises'],
+['comm12','community','Succession plan written into LLC agreement','What happens if the founding steward cannot continue. Written into both legal entities.',6,2,false,['a11'],'',0,'Not morbid. Essential.'],
+['comm13','community','First individual walipini built (Tier 3)','10×16 ft. Community builds together. Satellite inoculant station. Assigned staple crop.',26,3,false,['comm10','fun10'],'',0,'The covenant made physical: the community builds with you'],
+['comm14','community','Oral history archive — first recordings','Interview first community members about their experience, skills, and stories. Archive in knowledge hub.',12,1,false,['str13'],'',0,'The most irreplaceable thing the community produces'],
+['comm15','community','Teaching platform public launch','All documented systems, soil data, governance framework, replication guide published.',18,2,false,['rev13','grnt07'],'',0,'One documented farm enables the next ten'],
+];
+
+let MODE='realistic';
+let FILTER='all';
+let SORT='time';
+let QUERY='';
+let openId=null;
+
+const DELAYS={realistic:0,optimistic:-0.3,badluck:1.5};
+
+function ts(t){ let s=t[4]; if(MODE==='badluck'&&t[8])s+=(t[9]||1); if(MODE==='optimistic')s=Math.max(s-0.3,t[4]-0.5); return s; }
+function td(t){ let d=t[5]; if(MODE==='badluck'&&t[8])d+=(t[9]||0.5); return d; }
+function tLabel(s){ return s<0?`Pre-${Math.abs(Math.round(s))} mo`:s===0?'At closing':`Month ${Math.ceil(s)}`; }
+
+function buildChips(){
+  const cats=Object.entries(CATS);
+  let h=`<div class="chip ${FILTER==='all'?'active':''}" onclick="setFilter('all')"><div class="chip-dot" style="background:#9E8E7A"></div>All <span style="opacity:0.5;font-size:9px">${T.length}</span></div>`;
+  cats.forEach(([k,c])=>{
+    const n=T.filter(t=>t[1]===k).length;
+    h+=`<div class="chip ${FILTER===k?'active':''}" onclick="setFilter('${k}')" id="chip-${k}">
+      <div class="chip-dot" style="background:${c.color}"></div>${c.icon} ${c.label.split(' ')[0]} <span style="opacity:0.5;font-size:9px">${n}</span>
+    </div>`;
+  });
+  document.getElementById('chips').innerHTML=h;
+}
+
+function filtered(){
+  let tasks=T.filter(t=>(FILTER==='all'||t[1]===FILTER));
+  if(QUERY) tasks=tasks.filter(t=>t[2].toLowerCase().includes(QUERY)||t[3].toLowerCase().includes(QUERY));
+  if(SORT==='time') tasks=[...tasks].sort((a,b)=>ts(a)-ts(b));
+  return tasks;
+}
+
+function renderList(){
+  const tasks=filtered();
+  if(!tasks.length){
+    document.getElementById('taskList').innerHTML=`<div class="empty"><div class="empty-icon">🌵</div><div class="empty-text">No tasks match your search.<br>Try a different filter or keyword.</div></div>`;
+    updateSummary(0,0);
+    return;
+  }
+
+  let html='',lastGroup=null;
+
+  if(SORT==='cat'){
+    const groups={};
+    tasks.forEach(t=>{ if(!groups[t[1]])groups[t[1]]=[]; groups[t[1]].push(t); });
+    Object.entries(groups).forEach(([cat,ctasks])=>{
+      const info=CATS[cat];
+      html+=`<div class="group-head"><div class="group-dot" style="background:${info.color}"></div>${info.icon} ${info.label}<span class="group-count">${ctasks.length}</span></div>`;
+      ctasks.forEach(t=>html+=taskCard(t));
+    });
+  } else {
+    // Sort by time — group by phase
+    tasks.forEach(t=>{
+      const s=ts(t);
+      const phase=s<0?'Pre-Purchase':s<1?'Month 0 — Closing':s<4?'Months 1–3':s<7?'Months 4–6':s<10?'Months 7–9':s<13?'Months 10–12':s<19?'Year 2 (Months 13–18)':s<25?'Year 2 Late (Months 19–24)':'Year 3+';
+      if(phase!==lastGroup){
+        html+=`<div class="group-head">${phase}</div>`;
+        lastGroup=phase;
+      }
+      html+=taskCard(t);
+    });
+  }
+
+  document.getElementById('taskList').innerHTML=html;
+  updateSummary(tasks.length, tasks.filter(t=>t[6]).length);
+}
+
+function taskCard(t){
+  const s=ts(t);
+  const d=td(t);
+  const hasBad=MODE==='badluck'&&t[8];
+  const isOpen=openId===t[0];
+  const note=t[10]?`<div class="task-note">${t[10]}</div>`:'';
+  const badNote=hasBad?`<div class="task-bad">${t[8]}</div>`:'';
+  const deps=t[7]&&t[7].length?t[7].map(id=>{const dt=T.find(x=>x[0]===id);return dt?`<span class="dep-pill">${dt[2]}</span>`:''}).join(''):'';
+  const depsHtml=deps?`<div class="task-deps"><div class="task-deps-label">Depends on</div>${deps}</div>`:'';
+  return `<div class="task${isOpen?' open':''}" id="task-${t[0]}" onclick="toggleTask('${t[0]}')">
+    <div class="task-head">
+      <div class="task-stripe" style="background:${CATS[t[1]].color}"></div>
+      <div class="task-main">
+        <div class="task-name">${t[2]}</div>
+        <div class="task-meta">
+          <span class="tag tag-time">${tLabel(s)}</span>
+          <span class="tag tag-dur">${Math.round(d*10)/10} mo</span>
+          ${t[6]?'<span class="tag tag-critical">Critical</span>':''}
+          ${hasBad?'<span class="tag tag-bad">⚠ delayed</span>':''}
+        </div>
+      </div>
+      <div class="task-chevron">▾</div>
+    </div>
+    <div class="task-body">
+      <div class="task-desc">${t[3]}</div>
+      ${badNote}${note}${depsHtml}
+    </div>
+  </div>`;
+}
+
+function toggleTask(id){
+  openId=openId===id?null:id;
+  renderList();
+  if(openId){
+    setTimeout(()=>{
+      const el=document.getElementById('task-'+id);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    },50);
+  }
+}
+
+function updateSummary(count,critical){
+  const criticalMonth=T.filter(t=>t[6]).map(t=>ts(t)).filter(s=>s>=0).sort((a,b)=>a-b)[0]||0;
+  document.getElementById('summaryBar').innerHTML=`
+    <div class="sum-item"><div class="sum-val">${count}</div><div class="sum-label">Tasks</div></div>
+    <div class="sum-item"><div class="sum-val">${critical}</div><div class="sum-label">Critical</div></div>
+    <div class="sum-item"><div class="sum-val">${MODE==='badluck'?T.filter(t=>t[8]).length:0}</div><div class="sum-label">Bad Luck</div></div>
+    <div class="sum-item"><div class="sum-val">42</div><div class="sum-label">Mo Span</div></div>
+  `;
+  const pct=count/T.length*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+}
+
+function setMode(m){
+  MODE=m;
+  ['realistic','optimistic','badluck'].forEach(x=>document.getElementById('mb-'+x).classList.toggle('active',x===m));
+  openId=null;
+  renderList();
+}
+
+function setFilter(f){
+  FILTER=f;
+  openId=null;
+  buildChips();
+  renderList();
+  // Scroll chips to show active
+  setTimeout(()=>{
+    const el=document.getElementById('chip-'+f);
+    if(el) el.scrollIntoView({behavior:'smooth',inline:'nearest',block:'nearest'});
+  },50);
+}
+
+function setSort(s){
+  SORT=s;
+  document.getElementById('sb-time').classList.toggle('active',s==='time');
+  document.getElementById('sb-cat').classList.toggle('active',s==='cat');
+  openId=null;
+  renderList();
+}
+
+function onSearch(q){
+  QUERY=q.toLowerCase();
+  openId=null;
+  renderList();
+}
+
+buildChips();
+renderList();
+</script>
+</body>
+</html>
